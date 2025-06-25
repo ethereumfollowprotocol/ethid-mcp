@@ -1,0 +1,23 @@
+{
+  "name": "my-new-worker",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "deploy": "workers-mcp docgen src/index.ts && wrangler deploy",
+    "dev": "wrangler dev",
+    "start": "wrangler dev",
+    "test": "vitest",
+    "cf-typegen": "wrangler types"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.8.19",
+    "typescript": "^5.5.2",
+    "vitest": "~3.2.0",
+    "wrangler": "^4.21.1"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.13.1",
+    "agents": "^0.0.97",
+    "zod": "^3.25.67"
+  }
+}
