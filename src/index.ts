@@ -1104,6 +1104,190 @@ export class EFPMCPServer {
 				};
 			}
 
+			// Context access tools
+			case 'searchContexts': {
+				if (!args?.query) {
+					return { content: [{ type: 'text', text: 'Error: query is required' }] };
+				}
+				
+				let contexts = this.contextManager.searchContexts(args.query);
+				
+				if (args.category) {
+					contexts = contexts.filter(c => c.category === args.category);
+				}
+				
+				if (args.tags && args.tags.length > 0) {
+					contexts = contexts.filter(c => 
+						c.tags?.some(tag => args.tags.includes(tag))
+					);
+				}
+
+				const results = contexts.map(c => 
+					`- ${c.name} (${c.id}): ${c.description}`
+				).join('\n');
+
+				return {
+					content: [{
+						type: 'text',
+						text: results || "No contexts found matching your search"
+					}]
+				};
+			}
+
+			case 'searchFileContext': {
+				if (!args?.contextId || !args?.query) {
+					return { content: [{ type: 'text', text: 'Error: contextId and query are required' }] };
+				}
+				
+				const results = await this.contextManager.searchFileContext(args.contextId, args.query);
+				
+				if (results.length === 0) {
+					return {
+						content: [{
+							type: 'text',
+							text: `No results found for "${args.query}" in context "${args.contextId}"`
+						}]
+					};
+				}
+
+				return {
+					content: [{
+						type: 'text',
+						text: `Search results for "${args.query}" in ${args.contextId}:\n\n${results.join('\n\n---\n\n')}`
+					}]
+				};
+			}
+
+			case 'getFileMetadata': {
+				if (!args?.contextId) {
+					return { content: [{ type: 'text', text: 'Error: contextId is required' }] };
+				}
+				
+				const metadata = await this.contextManager.getFileMetadata(args.contextId);
+				
+				if (!metadata) {
+					return {
+						content: [{
+							type: 'text',
+							text: `File context "${args.contextId}" not found`
+						}]
+					};
+				}
+
+				return {
+					content: [{
+						type: 'text',
+						text: `Metadata for ${args.contextId}:
+- Lines: ${metadata.lines.toLocaleString()}
+- Characters: ${metadata.characters.toLocaleString()}
+- Available sections: ${metadata.sections.join(', ') || 'None'}`
+					}]
+				};
+			}
+
+			case 'getFileSection': {
+				if (!args?.contextId || !args?.section) {
+					return { content: [{ type: 'text', text: 'Error: contextId and section are required' }] };
+				}
+				
+				const sectionContent = await this.contextManager.getFileContextSection(args.contextId, args.section);
+				
+				if (!sectionContent) {
+					return {
+						content: [{
+							type: 'text',
+							text: `Section "${args.section}" not found in context "${args.contextId}"`
+						}]
+					};
+				}
+
+				return {
+					content: [{
+						type: 'text',
+						text: `Section "${args.section}" from ${args.contextId}:\n\n${sectionContent}`
+					}]
+				};
+			}
+
+			// AI Helper Tools
+			case 'getBestPractices': {
+				const scenario = args?.scenario || 'general';
+				
+				const practices = {
+					'tagged-users': 'ALWAYS use the efficient tag querying pattern: 1) fetchFollowingTags to get available tags, 2) getFollowing with ALL tags in the tags parameter. This is 5x faster than fetching full lists.',
+					'tool-selection': 'Use getFollowerCount for basic counts, fetchProfileStats for detailed/live data, checkFollower for user-level relationships, checkFollowing for list-level relationships.',
+					'performance': 'Use appropriate limits (<50 for quick queries), leverage pagination for large datasets, use isLive:true only when real-time data is needed.',
+					'error-handling': 'Always normalize ENS names (add .eth if missing), validate required parameters before calling, provide fallback strategies for common failures.',
+					'general': 'Use efficient tag querying for tagged users, choose right tools for the task, optimize parameters for performance, handle errors gracefully with fallbacks.'
+				};
+				
+				return {
+					content: [{
+						type: 'text',
+						text: `Best practices for ${scenario}:\n\n${practices[scenario] || practices.general}`
+					}]
+				};
+			}
+
+			case 'getUsagePattern': {
+				const queryType = args?.queryType || 'unknown';
+				
+				const patterns = {
+					'tagged-users': 'Pattern: fetchFollowingTags(user) → getFollowing(user, {tags: allTags}). Example: "Show me everyone brantly.eth has tagged" → Get tags first, then filter by all tags.',
+					'relationship-check': 'Pattern: checkFollower(target, follower) for user-level. Example: "Does vitalik.eth follow brantly.eth?" → Use checkFollower directly.',
+					'user-analysis': 'Pattern: fetchProfileStats(user) → fetchFollowingTags(user) → getFollowing(user, {tags: topTags}). Multi-step analysis starting with basic stats.',
+					'discovery': 'Pattern: fetchRecommendations() → For each interesting user, fetchProfileStats() and getFollowing(tags: ["top8"]). Discover users then analyze their networks.',
+					'performance-critical': 'Pattern: Use smallest possible limits, leverage caching, avoid allResults:true, use pagination for large datasets.'
+				};
+				
+				return {
+					content: [{
+						type: 'text',
+						text: `Usage pattern for ${queryType}:\n\n${patterns[queryType] || 'Specify queryType: tagged-users, relationship-check, user-analysis, discovery, or performance-critical'}`
+					}]
+				};
+			}
+
+			case 'getToolGuidance': {
+				const task = args?.task || 'unknown';
+				
+				const guidance = {
+					'follower-count': 'Use getFollowerCount for basic counts, fetchProfileStats for detailed stats or when you need live data (isLive:true).',
+					'following-list': 'Use getFollowing for simple lists. Add tags parameter for tagged users, search parameter for finding specific users, limit for size control.',
+					'relationship-check': 'Use checkFollower for "Does A follow B?" (user-level), checkFollowing for "Does list X follow Y?" (list-level).',
+					'tagged-users': 'ALWAYS use efficient pattern: fetchFollowingTags first, then getFollowing with all tags. Never fetch full lists and filter locally.',
+					'user-discovery': 'Use fetchRecommendations for discovery, fetchLeaderboard for top users by followers.',
+					'profile-data': 'Use fetchAccount for basic info, fetchProfileStats for metrics, fetchProfileLists for owned lists.',
+					'tags': 'Use fetchFollowingTags to see what tags someone uses, then getFollowing with specific tags to get tagged users.'
+				};
+				
+				return {
+					content: [{
+						type: 'text',
+						text: `Tool guidance for ${task}:\n\n${guidance[task] || 'Available tasks: follower-count, following-list, relationship-check, tagged-users, user-discovery, profile-data, tags'}`
+					}]
+				};
+			}
+
+			case 'getEfficiencyTips': {
+				const area = args?.area || 'general';
+				
+				const tips = {
+					'queries': '• Use efficient tag pattern for tagged users (5x faster)\n• Choose right tool for the task (getFollowerCount vs fetchProfileStats)\n• Use appropriate limits (default for small, pagination for large)\n• Leverage search parameters instead of local filtering',
+					'parameters': '• limit: Keep <50 for quick queries, use pagination for larger\n• isLive: Only use when real-time data needed\n• tags: Always use for filtering tagged users\n• search: Use server-side search instead of local filtering',
+					'performance': '• Fastest (<1s): getFollowerCount, checkFollower, checkFollowing\n• Medium (1-3s): getFollowing with filters, fetchProfileStats\n• Slower (3-5s): fetchLeaderboard, large pagination requests',
+					'errors': '• Normalize ENS names (add .eth if missing)\n• Validate required parameters before calling\n• Provide fallback strategies for common failures\n• Handle "not found" gracefully with alternatives',
+					'general': '• Use efficient tag querying pattern\n• Choose appropriate tools for tasks\n• Optimize parameters for performance\n• Handle errors with good fallbacks\n• Leverage server-side filtering'
+				};
+				
+				return {
+					content: [{
+						type: 'text',
+						text: `Efficiency tips for ${area}:\n\n${tips[area] || tips.general}`
+					}]
+				};
+			}
+
 			default:
 				throw new Error(`Unknown tool: ${name}`);
 		}
@@ -1229,6 +1413,18 @@ export class EFPMCPServer {
 
 									// List state
 									{ name: 'fetchListState', description: 'Export EFP list state' },
+
+									// Context access tools
+									{ name: 'searchContexts', description: 'Search across all available usage contexts and documentation' },
+									{ name: 'searchFileContext', description: 'Search within specific context files (usage-guide, patterns, examples)' },
+									{ name: 'getFileMetadata', description: 'Get metadata about available context files and sections' },
+									{ name: 'getFileSection', description: 'Get specific sections from context files' },
+
+									// AI helper tools
+									{ name: 'getBestPractices', description: 'Get best practices for specific EFP MCP usage scenarios' },
+									{ name: 'getUsagePattern', description: 'Get optimal usage patterns for common queries' },
+									{ name: 'getToolGuidance', description: 'Get guidance on selecting the right tool for specific tasks' },
+									{ name: 'getEfficiencyTips', description: 'Get performance optimization tips for EFP MCP usage' },
 								],
 							},
 						}),

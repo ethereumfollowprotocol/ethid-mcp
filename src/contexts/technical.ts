@@ -3,50 +3,66 @@ import type { ContextFile } from '../types/context';
 export const technicalContexts: ContextFile[] = [
   {
     id: 'api-guide',
-    name: 'API Guide',
-    description: 'Documentation for ethfollow.xyz API',
+    name: 'EFP API Reference',
+    description: 'Complete reference for EFP API endpoints and usage',
     category: 'technical',
-    content: `# EthFollow API Integration Guide
+    content: `# EFP API Integration Guide
 
-## API Endpoints
+## Current API Endpoints
 
-Replace the placeholder API endpoints in \`src/index.ts\` with your actual ethfollow.xyz API endpoints:
+The EFP MCP server uses these live API endpoints:
 
-### 1. Get Follower Count
+### Core API Endpoints (Live)
 \`\`\`
-GET /followers/count/{ensName}
-Response: { count: number }
-\`\`\`
-
-### 2. Check Following Relationship
-\`\`\`
-GET /following/check?follower={follower}&following={following}
-Response: { isFollowing: boolean }
-\`\`\`
-
-### 3. Get Followers List
-\`\`\`
-GET /followers/{ensName}?limit={limit}
-Response: { followers: string[] }
+GET /api/v1/users/{addressOrName}/stats - Get follower/following counts
+GET /api/v1/users/{addressOrName}/followers - Get followers list with filtering
+GET /api/v1/users/{addressOrName}/following - Get following list with filtering
+GET /api/v1/users/{addressOrName}/searchFollowing - Search following with tags
+GET /api/v1/users/{addressOrName}/tags/following - Get following tag statistics
+GET /api/v1/following/check - Check following relationship
+GET /api/v1/leaderboard/ranked - Get leaderboard by followers
+GET /api/v1/discover - Get discovery recommendations
 \`\`\`
 
-### 4. Get Following List
-\`\`\`
-GET /following/{ensName}?limit={limit}
-Response: { following: string[] }
-\`\`\`
+### Advanced Features Supported
+- **Tag filtering**: Filter by multiple tags in following/followers queries
+- **Search**: Real-time search within following lists
+- **Pagination**: Support for large datasets with pageParam
+- **Live data**: Real-time blockchain data with isLive parameter
+- **ENS resolution**: Automatic ENS name resolution
 
 ## Configuration
 
-Set the \`ETHFOLLOW_API_URL\` environment variable in your \`wrangler.jsonc\`:
+Set the \`EFP_API_URL\` environment variable in your \`wrangler.jsonc\`:
 
 \`\`\`json
 {
   "vars": {
-    "ETHFOLLOW_API_URL": "https://api.ethfollow.xyz"
+    "EFP_API_URL": "https://api.ethfollow.xyz/api/v1"
   }
 }
 \`\`\`
+
+## Available MCP Tools (28 Total)
+
+### API Tools (21):
+- Basic queries: getFollowerCount, getFollowers, getFollowing
+- Relationship checks: checkFollowing, checkFollower
+- Profile data: fetchAccount, fetchProfileStats, fetchProfileLists, etc.
+- Tag management: fetchFollowingTags, fetchFollowerTags
+- Discovery: fetchRecommendations, fetchLeaderboard
+
+### Context Tools (4):
+- searchContexts: Search across usage contexts
+- searchFileContext: Search within specific context files
+- getFileMetadata: Get context file metadata
+- getFileSection: Get specific context sections
+
+### AI Helper Tools (4):
+- getBestPractices: Get best practices for scenarios
+- getUsagePattern: Get optimal usage patterns
+- getToolGuidance: Get tool selection guidance
+- getEfficiencyTips: Get performance optimization tips
 
 ## Authentication
 
