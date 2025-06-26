@@ -6,7 +6,9 @@ This guide explains how to deploy and use the EthFollow MCP server with Claude C
 
 ### 1. Deploy the MCP Server
 
-First, deploy your MCP server to Cloudflare Workers:
+The MCP server is already deployed and available at: `https://efp-mcp.efp.workers.dev`
+
+To deploy your own instance:
 
 ```bash
 # Install dependencies
@@ -16,15 +18,13 @@ npm install
 npm run deploy
 ```
 
-After deployment, you'll get a URL like: `https://ethfollow-mcp.your-subdomain.workers.dev`
-
 ### 2. Configure Claude Code
 
-In Claude Code, configure the MCP server:
+In Claude Code, add the MCP server:
 
 ```bash
-# Add the MCP server
-claude config add-mcp-server ethfollow https://ethfollow-mcp.your-subdomain.workers.dev
+# Add the EthFollow MCP server
+claude mcp add --transport http efp-mcp https://efp-mcp.efp.workers.dev
 ```
 
 ### 3. Start Using
@@ -43,6 +43,9 @@ Ask about follower relationships:
 "Show me the first 10 followers of vitalik.eth"
 "Who is ens.eth following?"
 "List 5 people that brantly.eth follows"
+"Get recommendations for accounts to follow"
+"Show me the top 10 users by follower count"
+"Search for ENS names containing 'ethereum'"
 ```
 
 ### Protocol Documentation Access
@@ -86,6 +89,9 @@ Access targeted sections of documentation:
 - **checkFollowing**: Check if one ENS follows another
 - **getFollowers**: List followers of an ENS name
 - **getFollowing**: List who an ENS name follows
+- **getRecommendations**: Get recommended profiles to follow
+- **getLeaderboard**: Get top users by follower count
+- **searchENS**: Search for ENS names
 
 ### Documentation Access Tools
 - **searchFileContext**: Search within specific large files
@@ -201,22 +207,29 @@ In your `wrangler.jsonc`:
 ```json
 {
   "vars": {
-    "ETHFOLLOW_API_URL": "https://api.ethfollow.xyz",
-    "ETHFOLLOW_API_KEY": "your-api-key-if-needed"
+    "EFP_API_URL": "https://api.ethfollow.xyz"
   }
 }
 ```
 
-### Custom API Endpoints
+### API Endpoints Used
 
-Update `src/utils/api-client.ts` with your actual ethfollow.xyz API endpoints:
+The MCP server uses these EthFollow API endpoints:
 
-```typescript
-// Replace placeholder endpoints with real ones:
-// GET /followers/count/{ensName}
-// GET /following/check?follower={follower}&following={following}
-// GET /followers/{ensName}?limit={limit}
-// GET /following/{ensName}?limit={limit}
+```
+GET /api/v1/users/{ensName}/stats - Get follower/following counts
+GET /api/v1/following/check?follower={follower}&following={following} - Check following relationship
+GET /api/v1/users/{ensName}/followers?limit={limit} - Get followers list
+GET /api/v1/users/{ensName}/following?limit={limit} - Get following list
+GET /api/v1/users/{ensName}/recommended?limit={limit} - Get recommendations
+GET /api/v1/discover?limit={limit} - Get general recommendations
+GET /api/v1/leaderboard/ranked?limit={limit} - Get leaderboard
+GET /api/v1/leaderboard/search?limit={limit}&term={search} - Search leaderboard
+```
+
+ENS search uses The Graph's ENS subgraph:
+```
+POST https://api.thegraph.com/subgraphs/name/ensdomains/ens
 ```
 
 ## Troubleshooting
@@ -225,21 +238,21 @@ Update `src/utils/api-client.ts` with your actual ethfollow.xyz API endpoints:
 
 ```bash
 # Check deployment status
-npx wrangler tail ethfollow-mcp
+npx wrangler tail efp-mcp
 
 # Test the server directly
-curl https://ethfollow-mcp.your-subdomain.workers.dev
+curl https://efp-mcp.efp.workers.dev
 ```
 
 ### Claude Code Configuration
 
 ```bash
 # List configured MCP servers
-claude config list-mcp-servers
+claude mcp list
 
 # Remove and re-add if needed
-claude config remove-mcp-server ethfollow
-claude config add-mcp-server ethfollow https://your-new-url.workers.dev
+claude mcp remove efp-mcp
+claude mcp add --transport http efp-mcp https://efp-mcp.efp.workers.dev
 ```
 
 ### Common Issues
@@ -263,9 +276,41 @@ claude config add-mcp-server ethfollow https://your-new-url.workers.dev
 - Search results are limited to prevent timeouts
 - File metadata is cached for quick access
 
+## Testing the MCP
+
+You can test all available tools:
+
+```bash
+# List available MCP servers
+claude mcp list
+
+# Test with actual queries in Claude Code:
+# "How many followers does vitalik.eth have?"
+# "Search for 'authentication' in the SIWE documentation"
+# "Show me the top 5 users by follower count"
+# "What sections are available in the EFP documentation?"
+```
+
+## Available Tools Summary
+
+**API Tools (7):**
+- getFollowerCount - Get follower counts
+- checkFollowing - Check follow relationships  
+- getFollowers - List followers
+- getFollowing - List following
+- getRecommendations - Get recommended accounts
+- getLeaderboard - Get top users
+- searchENS - Search ENS names
+
+**Context Tools (4):**
+- searchFileContext - Search within specific docs (efp, eik, ens, siwe)
+- getFileMetadata - Get file info and sections
+- getFileSection - Get specific documentation sections
+- searchContexts - Search across all contexts
+
 ## Getting Help
 
-1. Check the deployment logs: `npx wrangler tail ethfollow-mcp`
+1. Check the deployment logs: `npx wrangler tail efp-mcp`
 2. Review the documentation in this repo
 3. Test individual tools using Claude Code's MCP inspector
 4. Verify your API endpoints are correctly configured

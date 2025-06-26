@@ -5,19 +5,24 @@ export interface StatsResponse {
 }
 
 export interface CheckFollowingResponse {
-	isFollowing: boolean;
-	error?: string;
+	token_id?: string;
+	address?: `0x${string}`;
+	state: {
+		follow: boolean;
+		block: boolean;
+		mute: boolean;
+	};
 }
 
 export interface FollowersListResponse {
-	followers: string[];
+	followers: FollowerResponse[];
 	total?: number;
 	hasMore?: boolean;
 	error?: string;
 }
 
 export interface FollowingListResponse {
-	following: string[];
+	following: FollowingResponse[];
 	total?: number;
 	hasMore?: boolean;
 	error?: string;
@@ -157,4 +162,9 @@ export interface InfiniteQueryProps {
 	fresh?: boolean;
 	filter?: string;
 	direction?: string;
+}
+
+export interface ProfileListsResponse {
+	primary_list?: string | null;
+	lists?: string[];
 }

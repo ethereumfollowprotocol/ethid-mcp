@@ -7,20 +7,18 @@ import type {
 	FollowingResponse,
 	FollowerResponse,
 	ProfileBadge,
-	ProfileRole,
 	ProfileLists,
 	FollowState,
 	TagsResponse,
 	NotificationsResponse,
 	DiscoverProfile,
 	LeaderboardResponse,
-	ENSDomain,
-	SearchENSResults,
 	InfiniteQueryProps,
 	StatsResponse,
+	ProfileListsResponse,
 } from '../types/api';
 
-export class EthFollowApiClient {
+export class EFPAPIClient {
 	private baseUrl: string;
 	private headers: HeadersInit;
 
@@ -64,47 +62,94 @@ export class EthFollowApiClient {
 	}
 
 	// Basic follower/following functionality
-	async getFollowerCount(ensName: string): Promise<StatsResponse> {
+	async getFollowerCount(addressOrName: string): Promise<StatsResponse> {
 		try {
-			const response = await fetch(`${this.baseUrl}/users/${encodeURIComponent(ensName)}/stats`, { headers: this.headers });
+			const response = await fetch(`${this.baseUrl}/users/${encodeURIComponent(addressOrName)}/stats`, { headers: this.headers });
 			return this.handleResponse<StatsResponse>(response);
 		} catch (error) {
-			console.error(`Failed to get follower count for ${ensName}:`, error);
+			console.error(`Failed to get follower count for ${addressOrName}:`, error);
 			return { followers_count: 0, following_count: 0, error: error instanceof Error ? error.message : 'Unknown error' };
 		}
 	}
 
-	async checkFollowing(follower: string, following: string): Promise<CheckFollowingResponse> {
+	async checkFollowing(list: number, following: string): Promise<CheckFollowingResponse> {
 		try {
-			const params = new URLSearchParams({
-				follower: follower,
-				following: following,
-			});
-
-			const response = await fetch(`${this.baseUrl}/following/check?${params}`, { headers: this.headers });
+			const response = await fetch(`${this.baseUrl}/lists/${list}/${following}/buttonState`, { headers: this.headers });
 			return this.handleResponse<CheckFollowingResponse>(response);
 		} catch (error) {
 			console.error(`Failed to check following relationship:`, error);
-			return { isFollowing: false, error: error instanceof Error ? error.message : 'Unknown error' };
+			return { state: { follow: false, block: false, mute: false } };
 		}
 	}
 
-	async getFollowers(ensName: string, limit: number = 10): Promise<FollowersListResponse> {
+	async checkFollower(addressOrName: string, follower: string): Promise<CheckFollowingResponse> {
 		try {
-			const response = await fetch(`${this.baseUrl}/followers/${encodeURIComponent(ensName)}?limit=${limit}`, { headers: this.headers });
+			const response = await fetch(`${this.baseUrl}/users/${addressOrName}/${follower}/followerState`, { headers: this.headers });
+			return this.handleResponse<CheckFollowingResponse>(response);
+		} catch (error) {
+			console.error(`Failed to check follower relationship:`, error);
+			return { state: { follow: false, block: false, mute: false } };
+		}
+	}
+
+	async getFollowers(
+		addressOrName: string,
+		limit: number = 10,
+		tags: string[] = [],
+		search: string = '',
+		sort: string = 'follower count'
+	): Promise<FollowersListResponse> {
+		try {
+			const queryParams = this.formatQueryParams({
+				limit: limit,
+				tags: tags,
+				term: search,
+				sort: sort
+					? {
+							'earliest first': 'earliest',
+							'latest first': 'latest',
+							'follower count': 'followers',
+					  }[sort]
+					: undefined,
+			});
+			const followersEndpoint = search && search?.length > 0 ? 'searchFollowers' : 'followers';
+			const response = await fetch(`${this.baseUrl}/users/${encodeURIComponent(addressOrName)}/${followersEndpoint}?${queryParams}`, {
+				headers: this.headers,
+			});
 			return this.handleResponse<FollowersListResponse>(response);
 		} catch (error) {
-			console.error(`Failed to get followers for ${ensName}:`, error);
+			console.error(`Failed to get followers for ${addressOrName}:`, error);
 			return { followers: [], error: error instanceof Error ? error.message : 'Unknown error' };
 		}
 	}
 
-	async getFollowing(ensName: string, limit: number = 10): Promise<FollowingListResponse> {
+	async getFollowing(
+		addressOrName: string,
+		limit: number = 10,
+		tags: string[] = [],
+		search: string = '',
+		sort: string = 'follower count'
+	): Promise<FollowingListResponse> {
 		try {
-			const response = await fetch(`${this.baseUrl}/following/${encodeURIComponent(ensName)}?limit=${limit}`, { headers: this.headers });
+			const queryParams = this.formatQueryParams({
+				limit: limit,
+				tags: tags,
+				term: search,
+				sort: sort
+					? {
+							'earliest first': 'earliest',
+							'latest first': 'latest',
+							'follower count': 'followers',
+					  }[sort]
+					: undefined,
+			});
+			const followingEndpoint = search && search?.length > 0 ? 'searchFollowing' : 'following';
+			const response = await fetch(`${this.baseUrl}/users/${encodeURIComponent(addressOrName)}/${followingEndpoint}?${queryParams}`, {
+				headers: this.headers,
+			});
 			return this.handleResponse<FollowingListResponse>(response);
 		} catch (error) {
-			console.error(`Failed to get following for ${ensName}:`, error);
+			console.error(`Failed to get following for ${addressOrName}:`, error);
 			return { following: [], error: error instanceof Error ? error.message : 'Unknown error' };
 		}
 	}
@@ -401,6 +446,20 @@ export class EthFollowApiClient {
 		} catch (error) {
 			console.error(`Failed to fetch list state:`, error);
 			return [];
+		}
+	}
+
+	// Fetch lists for a user
+	async fetchListsForUser(addressOrName: string): Promise<ProfileListsResponse> {
+		try {
+			const response = await fetch(`${this.baseUrl}/users/${addressOrName}/lists`, { headers: this.headers });
+			const data = await this.handleResponse<ProfileListsResponse>(response);
+			return data;
+		} catch (err: unknown) {
+			return {
+				primary_list: null,
+				lists: [],
+			} as ProfileListsResponse;
 		}
 	}
 }

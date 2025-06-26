@@ -30,7 +30,7 @@
 	 * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
 	 */
 	"vars": {
-		"EFP_API_URL": "https://api.ethfollow.xyz"
+		"EFP_API_URL": "https://api.ethfollow.xyz/api/v1"
 	},
 	/**
 	 * Note: Use secrets to store sensitive data.
