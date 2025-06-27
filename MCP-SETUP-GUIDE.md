@@ -55,13 +55,25 @@ You should see Claude use the `getFollowerCount` tool from the EFP MCP server.
 
 ## Tool Discovery for Claude Code
 
-If Claude doesn't automatically discover the tools, tell it explicitly:
+### Current Status
+Claude Code can see the tool definitions but may have connection issues with the HTTP MCP server. 
+
+### Workaround
+If you get OAuth errors, use this approach:
 
 > "Check /tools/list in efp-mcp to see available tools, then use getFollowerCount for vitalik.eth"
 
-This helps Claude discover all 28 available tools in the EFP MCP server.
+### Direct API Alternative
+You can also use the API directly:
+```bash
+curl -X POST https://efp-mcp.efp.workers.dev/ \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"getFollowerCount","arguments":{"addressOrName":"vitalik.eth"}}}'
+```
 
-## Available Tools (28 Total)
+This helps Claude discover all 25 available tools in the EFP MCP server.
+
+## Available Tools (25 Total)
 
 ### Core API Tools (21)
 - `getFollowerCount` - Get follower/following count
@@ -85,11 +97,8 @@ This helps Claude discover all 28 available tools in the EFP MCP server.
 - `fetchPoapLink` - Get POAP link
 - `fetchListState` - Export EFP list state
 
-### Context Tools (4)
-- `searchContexts` - Search across all documentation
-- `searchFileContext` - Search within specific context files
-- `getFileMetadata` - Get metadata about context files
-- `getFileSection` - Get specific sections from context files
+### Context Tools (1)
+- `searchContexts` - Search across all documentation and protocols
 
 ### AI Helper Tools (4)
 - `getBestPractices` - Get best practices for scenarios

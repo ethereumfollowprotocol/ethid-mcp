@@ -1242,7 +1242,7 @@ export class EFPMCPServer {
 			const newSessionId = crypto.randomUUID();
 
 			const sendSSE = async (data: any) => {
-				const message = `data: ${JSON.stringify(data)}\\n\\n`;
+				const message = `data: ${JSON.stringify(data)}\n\n`;
 				await writer.write(encoder.encode(message));
 			};
 
@@ -1254,7 +1254,7 @@ export class EFPMCPServer {
 
 			const keepAlive = setInterval(async () => {
 				try {
-					await writer.write(encoder.encode(':keepalive\\n\\n'));
+					await writer.write(encoder.encode(':keepalive\n\n'));
 				} catch {
 					clearInterval(keepAlive);
 				}
@@ -1270,7 +1270,7 @@ export class EFPMCPServer {
 				headers: {
 					'Content-Type': 'text/event-stream',
 					'Cache-Control': 'no-cache',
-					Connection: 'keep-alive',
+					'Connection': 'keep-alive',
 					'Access-Control-Allow-Origin': '*',
 					'X-Mcp-Session-Id': newSessionId,
 				},
