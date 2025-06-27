@@ -12,16 +12,36 @@ Add this to your Claude Desktop MCP configuration:
 {
   "mcpServers": {
     "efp-mcp": {
-      "command": "npx",
-      "args": ["-y", "supergateway", "--sse", "https://efp-mcp.efp.workers.dev"]
+      "command": "supergateway",
+      "args": ["--sse", "https://efp-mcp.efp.workers.dev"]
     }
   }
 }
 ```
 
-### Method 2: Alternative Configuration
+**Note:** You'll need to install supergateway globally first:
+```bash
+npm install -g supergateway
+```
 
-If Method 1 doesn't work, try this alternative:
+### Method 2: Using npx (No global install)
+
+If you prefer not to install globally:
+
+```json
+{
+  "mcpServers": {
+    "efp-mcp": {
+      "command": "bash",
+      "args": ["-c", "npx -y supergateway --sse https://efp-mcp.efp.workers.dev"]
+    }
+  }
+}
+```
+
+### Method 3: Direct node execution
+
+Alternative configuration without external packages:
 
 ```json
 {
@@ -30,23 +50,24 @@ If Method 1 doesn't work, try this alternative:
       "command": "node",
       "args": [
         "-e",
-        "const { SSEServerTransport } = require('@modelcontextprotocol/sdk/server/sse.js'); const { Server } = require('@modelcontextprotocol/sdk/server/index.js'); const fetch = require('node-fetch'); const server = new Server({ name: 'efp-proxy', version: '1.0.0' }, { capabilities: { tools: {} } }); server.setRequestHandler(require('@modelcontextprotocol/sdk/types.js').ListToolsRequestSchema, async () => { const resp = await fetch('https://efp-mcp.efp.workers.dev/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list', params: {} }) }); const data = await resp.json(); return data.result; }); server.setRequestHandler(require('@modelcontextprotocol/sdk/types.js').CallToolRequestSchema, async (request) => { const resp = await fetch('https://efp-mcp.efp.workers.dev/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: request.params }) }); const data = await resp.json(); return data.result; }); const transport = new SSEServerTransport('/tmp/mcp-efp', server); transport.start();"
+        "const { SSEServerTransport } = require('@modelcontextprotocol/sdk/server/sse.js'); const { Server } = require('@modelcontextprotocol/sdk/server/index.js'); const server = new Server({ name: 'efp-proxy', version: '1.0.0' }, { capabilities: { tools: {} } }); server.setRequestHandler(require('@modelcontextprotocol/sdk/types.js').ListToolsRequestSchema, async () => { const resp = await fetch('https://efp-mcp.efp.workers.dev/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list', params: {} }) }); const data = await resp.json(); return data.result; }); server.setRequestHandler(require('@modelcontextprotocol/sdk/types.js').CallToolRequestSchema, async (request) => { const resp = await fetch('https://efp-mcp.efp.workers.dev/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: request.params }) }); const data = await resp.json(); return data.result; }); const transport = new SSEServerTransport('/tmp/mcp-efp', server); transport.start();"
       ]
     }
   }
 }
 ```
 
-### Method 3: Direct Configuration (Claude Desktop UI)
+### Method 4: Direct Configuration (Claude Desktop UI)
 
-1. Open Claude Desktop
-2. Go to Settings (⌘,)
-3. Click on "MCP Servers" tab
-4. Add a new server with these details:
+1. First install supergateway: `npm install -g supergateway`
+2. Open Claude Desktop
+3. Go to Settings (⌘,)
+4. Click on "MCP Servers" tab
+5. Add a new server with these details:
 
 **Server Name:** `efp-mcp`
-**Command:** `npx`
-**Arguments:** `-y supergateway --sse https://efp-mcp.efp.workers.dev`
+**Command:** `supergateway`
+**Arguments:** `--sse https://efp-mcp.efp.workers.dev`
 
 ## Verification
 
@@ -137,6 +158,12 @@ If you see errors like "404 Not Found - @anthropic-ai/mcp-server-http":
 - Use the updated configuration with `supergateway` instead
 - Make sure you're using Method 1 (Supergateway) from this guide
 - The old `@anthropic-ai/mcp-server-http` package doesn't exist
+
+### NPX Command Errors
+If you see "ERROR: You must supply a command" from npx:
+- Try Method 1 (install supergateway globally) instead of npx
+- Or use Method 2 (bash wrapper) which handles npx correctly
+- The issue is with how Claude Desktop passes arguments to npx
 
 ### Network Issues
 - Check internet connection
