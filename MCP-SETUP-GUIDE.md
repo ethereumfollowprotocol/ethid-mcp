@@ -6,6 +6,8 @@ To use the EFP MCP server with Claude Desktop, add this configuration to your Cl
 
 ### Method 1: Using Supergateway (Recommended)
 
+**Requirements:** Node.js 15+ (for nullish coalescing operator support)
+
 Add this to your Claude Desktop MCP configuration:
 
 ```json
@@ -19,29 +21,16 @@ Add this to your Claude Desktop MCP configuration:
 }
 ```
 
-**Note:** You'll need to install supergateway globally first:
+**Setup:**
 ```bash
 npm install -g supergateway
 ```
 
-### Method 2: Using npx (No global install)
+**If you get syntax errors:** Upgrade Node.js or use Method 2 below.
 
-If you prefer not to install globally:
+### Method 2: Using MCP SDK (Recommended for Node.js compatibility)
 
-```json
-{
-  "mcpServers": {
-    "efp-mcp": {
-      "command": "bash",
-      "args": ["-c", "npx -y supergateway --sse https://efp-mcp.efp.workers.dev"]
-    }
-  }
-}
-```
-
-### Method 3: Direct node execution
-
-Alternative configuration without external packages:
+This method uses the official MCP SDK and works with any Node.js version:
 
 ```json
 {
@@ -56,6 +45,25 @@ Alternative configuration without external packages:
   }
 }
 ```
+
+**Setup:**
+```bash
+npm install -g @modelcontextprotocol/sdk
+```
+
+### Method 3: Using npx with bash wrapper
+
+```json
+{
+  "mcpServers": {
+    "efp-mcp": {
+      "command": "bash",
+      "args": ["-c", "npx -y supergateway --sse https://efp-mcp.efp.workers.dev"]
+    }
+  }
+}
+```
+
 
 ### Method 4: Direct Configuration (Claude Desktop UI)
 
@@ -162,8 +170,14 @@ If you see errors like "404 Not Found - @anthropic-ai/mcp-server-http":
 ### NPX Command Errors
 If you see "ERROR: You must supply a command" from npx:
 - Try Method 1 (install supergateway globally) instead of npx
-- Or use Method 2 (bash wrapper) which handles npx correctly
+- Or use Method 3 (bash wrapper) which handles npx correctly
 - The issue is with how Claude Desktop passes arguments to npx
+
+### Node.js Syntax Errors
+If you see "SyntaxError: Unexpected token '??='" with supergateway:
+- This means you have an older Node.js version
+- Use Method 2 (MCP SDK) which is compatible with all Node.js versions
+- Or upgrade Node.js to version 15+ and reinstall supergateway
 
 ### Network Issues
 - Check internet connection
