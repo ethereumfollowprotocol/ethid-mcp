@@ -1134,86 +1134,14 @@ export class EFPMCPServer {
 				};
 			}
 
-			case 'searchFileContext': {
-				if (!args?.contextId || !args?.query) {
-					return { content: [{ type: 'text', text: 'Error: contextId and query are required' }] };
-				}
-				
-				const results = await this.contextManager.searchFileContext(args.contextId, args.query);
-				
-				if (results.length === 0) {
-					return {
-						content: [{
-							type: 'text',
-							text: `No results found for "${args.query}" in context "${args.contextId}"`
-						}]
-					};
-				}
-
-				return {
-					content: [{
-						type: 'text',
-						text: `Search results for "${args.query}" in ${args.contextId}:\n\n${results.join('\n\n---\n\n')}`
-					}]
-				};
-			}
-
-			case 'getFileMetadata': {
-				if (!args?.contextId) {
-					return { content: [{ type: 'text', text: 'Error: contextId is required' }] };
-				}
-				
-				const metadata = await this.contextManager.getFileMetadata(args.contextId);
-				
-				if (!metadata) {
-					return {
-						content: [{
-							type: 'text',
-							text: `File context "${args.contextId}" not found`
-						}]
-					};
-				}
-
-				return {
-					content: [{
-						type: 'text',
-						text: `Metadata for ${args.contextId}:
-- Lines: ${metadata.lines.toLocaleString()}
-- Characters: ${metadata.characters.toLocaleString()}
-- Available sections: ${metadata.sections.join(', ') || 'None'}`
-					}]
-				};
-			}
-
-			case 'getFileSection': {
-				if (!args?.contextId || !args?.section) {
-					return { content: [{ type: 'text', text: 'Error: contextId and section are required' }] };
-				}
-				
-				const sectionContent = await this.contextManager.getFileContextSection(args.contextId, args.section);
-				
-				if (!sectionContent) {
-					return {
-						content: [{
-							type: 'text',
-							text: `Section "${args.section}" not found in context "${args.contextId}"`
-						}]
-					};
-				}
-
-				return {
-					content: [{
-						type: 'text',
-						text: `Section "${args.section}" from ${args.contextId}:\n\n${sectionContent}`
-					}]
-				};
-			}
 
 			// AI Helper Tools
 			case 'getBestPractices': {
 				const scenario = args?.scenario || 'general';
 				
 				const practices = {
+					'getting-started': 'FIRST: Tell Claude to "Check /tools/list in efp-mcp" to discover all 28 tools. Then try: getFollowerCount("vitalik.eth"), or searchContexts("SIWE") for documentation.',
+					'tool-discovery': 'To discover tools: "Check /tools/list in efp-mcp". If tools not found, be explicit: "Use the getFollowerCount tool from efp-mcp". All 28 tools are available.',
 					'tagged-users': 'ALWAYS use the efficient tag querying pattern: 1) fetchFollowingTags to get available tags, 2) getFollowing with ALL tags in the tags parameter. This is 5x faster than fetching full lists.',
 					'tool-selection': 'Use getFollowerCount for basic counts, fetchProfileStats for detailed/live data, checkFollower for user-level relationships, checkFollowing for list-level relationships.',
 					'performance': 'Use appropriate limits (<50 for quick queries), leverage pagination for large datasets, use isLive:true only when real-time data is needed.',
@@ -1416,9 +1344,6 @@ export class EFPMCPServer {
 
 									// Context access tools
 									{ name: 'searchContexts', description: 'Search across all available usage contexts and documentation' },
-									{ name: 'searchFileContext', description: 'Search within specific context files (usage-guide, patterns, examples)' },
-									{ name: 'getFileMetadata', description: 'Get metadata about available context files and sections' },
-									{ name: 'getFileSection', description: 'Get specific sections from context files' },
 
 									// AI helper tools
 									{ name: 'getBestPractices', description: 'Get best practices for specific EFP MCP usage scenarios' },

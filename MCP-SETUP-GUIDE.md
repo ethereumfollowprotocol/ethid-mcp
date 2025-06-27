@@ -53,6 +53,14 @@ After setup, restart Claude Desktop and verify the connection by asking:
 
 You should see Claude use the `getFollowerCount` tool from the EFP MCP server.
 
+## Tool Discovery for Claude Code
+
+If Claude doesn't automatically discover the tools, tell it explicitly:
+
+> "Check /tools/list in efp-mcp to see available tools, then use getFollowerCount for vitalik.eth"
+
+This helps Claude discover all 28 available tools in the EFP MCP server.
+
 ## Available Tools (28 Total)
 
 ### Core API Tools (21)

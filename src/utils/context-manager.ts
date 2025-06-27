@@ -1,14 +1,11 @@
 import type { ContextFile, ContextCategory } from '../types/context';
-import { FileContextLoader, type FileContextConfig } from './file-context-loader';
 
 export class ContextManager {
   private contexts: Map<string, ContextFile> = new Map();
   private categories: Map<string, ContextCategory> = new Map();
-  private fileContexts: Map<string, FileContextConfig> = new Map();
-  private fileLoader: FileContextLoader;
 
   constructor(autoLoad: boolean = false) {
-    this.fileLoader = new FileContextLoader();
+    // Simplified - no file loading needed
   }
 
   addContext(context: Omit<ContextFile, 'mimeType'> & { mimeType?: string }) {
@@ -37,54 +34,6 @@ export class ContextManager {
     contexts.forEach(context => this.addContext(context));
   }
 
-  addFileContext(config: FileContextConfig) {
-    this.fileContexts.set(config.id, config);
-    
-    // Add to category if specified
-    if (config.category) {
-      if (!this.categories.has(config.category)) {
-        this.categories.set(config.category, {
-          id: config.category,
-          name: config.category.charAt(0).toUpperCase() + config.category.slice(1),
-          description: `${config.category} related contexts`,
-          contexts: []
-        });
-      }
-    }
-  }
-
-  addBulkFileContexts(configs: FileContextConfig[]) {
-    configs.forEach(config => this.addFileContext(config));
-  }
-
-  async getFileContext(id: string): Promise<ContextFile | undefined> {
-    const config = this.fileContexts.get(id);
-    if (!config) return undefined;
-    
-    return await this.fileLoader.loadFileContext(config);
-  }
-
-  async getFileContextSection(id: string, section: string): Promise<string | undefined> {
-    const config = this.fileContexts.get(id);
-    if (!config) return undefined;
-    
-    return await this.fileLoader.loadFileSection(config, section);
-  }
-
-  async searchFileContext(id: string, query: string): Promise<string[]> {
-    const config = this.fileContexts.get(id);
-    if (!config) return [];
-    
-    return await this.fileLoader.searchInFile(config, query);
-  }
-
-  async getFileMetadata(id: string) {
-    const config = this.fileContexts.get(id);
-    if (!config) return undefined;
-    
-    return await this.fileLoader.getFileMetadata(config);
-  }
-
   getContext(id: string): ContextFile | undefined {
     return this.contexts.get(id);
   }
@@ -93,14 +42,8 @@ export class ContextManager {
     return Array.from(this.contexts.values());
   }
 
-  getAllFileContexts(): FileContextConfig[] {
-    return Array.from(this.fileContexts.values());
-  }
-
   getAllContextIds(): string[] {
-    const regularIds = Array.from(this.contexts.keys());
-    const fileIds = Array.from(this.fileContexts.keys());
-    return [...regularIds, ...fileIds];
+    return Array.from(this.contexts.keys());
   }
 
   getContextsByCategory(category: string): ContextFile[] {
@@ -127,22 +70,6 @@ export class ContextManager {
     return Array.from(this.categories.values());
   }
 
-  // Load contexts from external source (e.g., files, API, database)
-  async loadContextsFromSource(source: 'files' | 'api' | 'kv', config?: any): Promise<void> {
-    switch (source) {
-      case 'files':
-        // In production, this could read from actual files
-        // For now, contexts are loaded in constructor
-        break;
-      case 'api':
-        // Could fetch contexts from an API
-        break;
-      case 'kv':
-        // Could load from Cloudflare KV storage
-        break;
-    }
-  }
-
   // Export contexts for storage or transfer
   exportContexts(): {
     contexts: ContextFile[];
@@ -154,11 +81,20 @@ export class ContextManager {
     };
   }
 
-  // Import contexts from exported data
+  // Import contexts from external data
   importContexts(data: {
     contexts: ContextFile[];
     categories?: ContextCategory[];
-  }) {
-    data.contexts.forEach(context => this.addContext(context));
+  }): void {
+    this.contexts.clear();
+    this.categories.clear();
+    
+    this.addBulkContexts(data.contexts);
+    
+    if (data.categories) {
+      data.categories.forEach(category => {
+        this.categories.set(category.id, category);
+      });
+    }
   }
 }

@@ -1,15 +1,11 @@
 import { ContextManager } from './context-manager';
 import { allContexts } from '../contexts';
-import { protocolContextConfigs } from '../contexts/protocols';
 import type { ContextFile } from '../types/context';
 
 export class ContextLoader {
   static loadFromModules(manager: ContextManager): void {
-    // Load all small embedded contexts from the contexts directory
+    // Load all contexts from the contexts directory (now includes protocols!)
     manager.addBulkContexts(allContexts);
-    
-    // Load all file-based protocol contexts (large documentation files)
-    manager.addBulkFileContexts(protocolContextConfigs);
   }
 
   static async loadFromKV(manager: ContextManager, kv: any): Promise<void> {

@@ -6,14 +6,18 @@ import { technicalContexts } from './technical';
 import { businessContexts } from './business';
 import { usageGuideContexts } from './usage-guide';
 import { aiGuidelinesContexts } from './ai-guidelines';
+import { protocolContexts } from './protocols-content';
+import { setupContexts } from './setup';
 
 // Export all contexts
 export const allContexts: ContextFile[] = [
+  ...setupContexts,  // Setup first for easy discovery
   ...generalContexts,
   ...technicalContexts,
   ...businessContexts,
   ...usageGuideContexts,
   ...aiGuidelinesContexts,
+  ...protocolContexts,  // Now searchable!
 ];
 
 // Export individual context groups for selective loading
