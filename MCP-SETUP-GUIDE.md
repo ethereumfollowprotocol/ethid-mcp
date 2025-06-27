@@ -4,18 +4,7 @@
 
 To use the EFP MCP server with Claude Desktop, add this configuration to your Claude Desktop settings:
 
-### Method 1: Configure via Claude Desktop Settings
-
-1. Open Claude Desktop
-2. Go to Settings (⌘,)
-3. Click on "MCP Servers" tab
-4. Add a new server with these details:
-
-**Server Name:** `efp-mcp`
-**Server URL:** `https://efp-mcp.efp.workers.dev`
-**Server Type:** `HTTP`
-
-### Method 2: Direct JSON Configuration
+### Method 1: Using Supergateway (Recommended)
 
 Add this to your Claude Desktop MCP configuration:
 
@@ -24,26 +13,40 @@ Add this to your Claude Desktop MCP configuration:
   "mcpServers": {
     "efp-mcp": {
       "command": "npx",
-      "args": ["-y", "@anthropic-ai/mcp-server-http", "https://efp-mcp.efp.workers.dev"]
+      "args": ["-y", "supergateway", "--sse", "https://efp-mcp.efp.workers.dev"]
     }
   }
 }
 ```
 
-### Method 3: Local Configuration File
+### Method 2: Alternative Configuration
 
-If using a configuration file, create/edit `~/.claude/mcp_servers.json`:
+If Method 1 doesn't work, try this alternative:
 
 ```json
 {
   "mcpServers": {
     "efp-mcp": {
       "command": "node",
-      "args": ["-e", "require('@anthropic-ai/mcp-server-http').startServer('https://efp-mcp.efp.workers.dev')"]
+      "args": [
+        "-e",
+        "const { SSEServerTransport } = require('@modelcontextprotocol/sdk/server/sse.js'); const { Server } = require('@modelcontextprotocol/sdk/server/index.js'); const fetch = require('node-fetch'); const server = new Server({ name: 'efp-proxy', version: '1.0.0' }, { capabilities: { tools: {} } }); server.setRequestHandler(require('@modelcontextprotocol/sdk/types.js').ListToolsRequestSchema, async () => { const resp = await fetch('https://efp-mcp.efp.workers.dev/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list', params: {} }) }); const data = await resp.json(); return data.result; }); server.setRequestHandler(require('@modelcontextprotocol/sdk/types.js').CallToolRequestSchema, async (request) => { const resp = await fetch('https://efp-mcp.efp.workers.dev/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: request.params }) }); const data = await resp.json(); return data.result; }); const transport = new SSEServerTransport('/tmp/mcp-efp', server); transport.start();"
+      ]
     }
   }
 }
 ```
+
+### Method 3: Direct Configuration (Claude Desktop UI)
+
+1. Open Claude Desktop
+2. Go to Settings (⌘,)
+3. Click on "MCP Servers" tab
+4. Add a new server with these details:
+
+**Server Name:** `efp-mcp`
+**Command:** `npx`
+**Arguments:** `-y supergateway --sse https://efp-mcp.efp.workers.dev`
 
 ## Verification
 
@@ -128,6 +131,12 @@ What's the efficient pattern for getting all tagged users?
 - Ensure Claude Desktop is restarted after configuration
 - Check that the server URL is reachable: https://efp-mcp.efp.workers.dev
 - Verify MCP server configuration in Claude Desktop settings
+
+### NPM Package Errors
+If you see errors like "404 Not Found - @anthropic-ai/mcp-server-http":
+- Use the updated configuration with `supergateway` instead
+- Make sure you're using Method 1 (Supergateway) from this guide
+- The old `@anthropic-ai/mcp-server-http` package doesn't exist
 
 ### Network Issues
 - Check internet connection
