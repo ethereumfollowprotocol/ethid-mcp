@@ -1,15 +1,15 @@
 import type { ContextFile } from '../types/context';
 
 export const generalContexts: ContextFile[] = [
-  {
-    id: 'readme',
-    name: 'README',
-    description: 'General context about the ethfollow project',
-    category: 'general',
-    content: `# EthFollow MCP Context
+	{
+		id: 'readme',
+		name: 'README',
+		description: 'General context about the ethereum follow protocol project',
+		category: 'general',
+		content: `# Ethereum Follow Protocol MCP Context
 
 ## Overview
-This MCP (Model Context Protocol) server provides integration with ethfollow.xyz, allowing you to query follower relationships on the Ethereum Name Service (ENS).
+This MCP (Model Context Protocol) server provides integration with Ethereum Follow Protocol, allowing you to query follower relationships on the Ethereum Name Service (ENS).
 
 ## Available Tools
 
@@ -20,7 +20,7 @@ Get the total number of followers for an ENS name.
 
 ### checkFollowing
 Check if one ENS name follows another.
-- Parameters: 
+- Parameters:
   - \`follower\`: ENS name of the potential follower
   - \`following\`: ENS name of the account being checked
 - Returns: Boolean result
@@ -46,16 +46,16 @@ Get a list of accounts an ENS name is following.
 - "Who is ens.eth following?"
 
 ## API Integration
-This server integrates with the ethfollow.xyz API to provide real-time follower data for ENS names on Ethereum.`,
-    mimeType: 'text/markdown',
-    tags: ['overview', 'tools', 'examples']
-  },
-  {
-    id: 'getting-started',
-    name: 'Getting Started',
-    description: 'Quick start guide for using the EthFollow MCP',
-    category: 'general',
-    content: `# Getting Started with EthFollow MCP
+This server integrates with the Ethereum Follow Protocol API to provide real-time follower data for ENS names on Ethereum.`,
+		mimeType: 'text/markdown',
+		tags: ['overview', 'tools', 'examples'],
+	},
+	{
+		id: 'getting-started',
+		name: 'Getting Started',
+		description: 'Quick start guide for using the Ethereum Follow Protocol MCP',
+		category: 'general',
+		content: `# Getting Started with Ethereum Follow Protocol MCP
 
 ## Prerequisites
 - ENS names to query (e.g., "vitalik.eth", "ens.eth")
@@ -77,7 +77,7 @@ Ask: "List the followers of [name].eth"
 - ENS names should include the .eth suffix
 - Use limit parameter for large follower lists
 - Results are real-time from the blockchain`,
-    mimeType: 'text/markdown',
-    tags: ['guide', 'quickstart', 'howto']
-  }
+		mimeType: 'text/markdown',
+		tags: ['guide', 'quickstart', 'howto'],
+	},
 ];

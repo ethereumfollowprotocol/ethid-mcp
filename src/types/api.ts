@@ -1,3 +1,18 @@
+export type Address = `0x${string}`;
+
+export interface ENSProfile {
+	name?: string;
+	avatar?: string;
+	display?: string;
+	header?: string;
+	contenthash?: string;
+	records?: Record<string, string>;
+	chains?: { [key: string]: string };
+	fresh?: number;
+	resolver?: string;
+	errors?: { [key: string]: string };
+}
+
 export interface StatsResponse {
 	followers_count: number;
 	following_count: number;
@@ -168,3 +183,9 @@ export interface ProfileListsResponse {
 	primary_list?: string | null;
 	lists?: string[];
 }
+
+export type AccountResponse = {
+	address: Address;
+	ens: ENSProfile;
+	primary_list: string | null;
+};

@@ -7,17 +7,15 @@ import { businessContexts } from './business';
 import { usageGuideContexts } from './usage-guide';
 import { aiGuidelinesContexts } from './ai-guidelines';
 import { protocolContexts } from './protocols-content';
-import { setupContexts } from './setup';
 
 // Export all contexts
 export const allContexts: ContextFile[] = [
-  ...setupContexts,  // Setup first for easy discovery
-  ...generalContexts,
-  ...technicalContexts,
-  ...businessContexts,
-  ...usageGuideContexts,
-  ...aiGuidelinesContexts,
-  ...protocolContexts,  // Now searchable!
+	...generalContexts,
+	...technicalContexts,
+	...businessContexts,
+	...usageGuideContexts,
+	...aiGuidelinesContexts,
+	...protocolContexts,
 ];
 
 // Export individual context groups for selective loading
@@ -25,12 +23,10 @@ export { generalContexts, technicalContexts, businessContexts, usageGuideContext
 
 // Helper function to get contexts by category
 export function getContextsByCategory(category: string): ContextFile[] {
-  return allContexts.filter(context => context.category === category);
+	return allContexts.filter((context) => context.category === category);
 }
 
 // Helper function to get contexts by tags
 export function getContextsByTags(tags: string[]): ContextFile[] {
-  return allContexts.filter(context => 
-    context.tags?.some(tag => tags.includes(tag))
-  );
+	return allContexts.filter((context) => context.tags?.some((tag) => tags.includes(tag)));
 }

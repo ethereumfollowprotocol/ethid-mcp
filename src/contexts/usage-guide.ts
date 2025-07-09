@@ -5,7 +5,7 @@ export const usageGuideContexts: ContextFile[] = [
     id: 'usage-patterns',
     name: 'EFP MCP Usage Patterns',
     description: 'Essential usage patterns and best practices for the EFP MCP server',
-    category: 'ai-guidelines',
+    category: 'usage-guide',
     content: `# EFP MCP Usage Patterns & Best Practices
 
 ## 🚀 Most Important Pattern: Efficient Tag Querying
@@ -123,7 +123,7 @@ To get all tagged users efficiently:
   {
     id: 'complete-tool-reference',
     name: 'Complete Tool Reference',
-    description: 'Comprehensive reference for all 25 EFP MCP tools with examples',
+    description: 'Comprehensive reference for all 27 EFP MCP tools with examples',
     category: 'technical',
     content: `# Complete EFP MCP Tool Reference
 

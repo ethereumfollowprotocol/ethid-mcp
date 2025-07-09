@@ -1,0 +1,14 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "efp-mcp",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-06-20",
+	"compatibility_flags": ["nodejs_compat"],
+	"account_id": "82fd12894541c76286f928562ffa29fa",
+	"observability": {
+		"enabled": true
+	},
+	"vars": {
+		"EFP_API_URL": "https://api.ethfollow.xyz/api/v1"
+	}
+}

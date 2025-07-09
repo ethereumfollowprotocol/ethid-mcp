@@ -1,158 +1,111 @@
-# EthFollow MCP Server
+# EthFollow Protocol MCP Server
 
-An MCP (Model Context Protocol) server that integrates with ethfollow.xyz API to query follower relationships on Ethereum Name Service (ENS).
+An MCP (Model Context Protocol) server that provides comprehensive access to the Ethereum Follow Protocol (EFP) API, enabling social graph queries for Ethereum addresses and ENS names.
 
 ## Features
 
-### Tools
-- **getFollowerCount**: Get the number of followers for an ENS name
-- **checkFollowing**: Check if one ENS name follows another
-- **getFollowers**: Get a list of followers for an ENS name
-- **getFollowing**: Get a list of accounts an ENS name is following
+### Core Tools (26 Total)
+- **Basic Operations**: `getFollowerCount`, `getFollowers`, `getFollowing`, `checkFollowing`, `checkFollower`
+- **Profile Data**: `fetchAccount`, `fetchProfileStats`, `fetchProfileLists`, `fetchProfileBadges`, `fetchProfileQRCode`
+- **Advanced Queries**: `fetchProfileFollowing`, `fetchProfileFollowers` with pagination and filtering
+- **Tag Management**: `fetchFollowingTags`, `fetchFollowerTags` (limited availability)
+- **Social Features**: `fetchFollowState`, `fetchNotifications`, `fetchRecommendations`, `fetchLeaderboard`
+- **List Operations**: `fetchListState`, `fetchListsForUser`, `fetchPoapLink`
+- **Help & Guidance**: `searchContexts`, `getBestPractices`, `getUsagePattern`, `getToolGuidance`, `getEfficiencyTips`
 
-### Resources
-- Context files that provide information about the API and available functions
-- Automatically included in conversations to provide context
+### Key Capabilities
+- **Tag Filtering**: Filter followers/following by tags (e.g., "top8", "friend", "family")
+- **ENS Resolution**: Automatic resolution of ENS names to addresses
+- **Pagination Support**: Handle large datasets efficiently
+- **Search Functionality**: Search within followers/following lists
+- **Real-time Data**: Option to fetch fresh data bypassing cache
 
 ## Setup
 
-### 1. Install Dependencies
-```bash
-npm install
-```
+### For Claude Desktop Users
 
-### 2. Configure Environment
-Update `wrangler.jsonc` with your API endpoint:
-```json
-{
-  "vars": { 
-    "ETHFOLLOW_API_URL": "https://api.ethfollow.xyz"
-  }
-}
-```
+See [MCP-SETUP-GUIDE.md](./MCP-SETUP-GUIDE.md) for detailed Claude Desktop configuration.
 
-If your API requires authentication, add:
-```json
-{
-  "vars": { 
-    "ETHFOLLOW_API_URL": "https://api.ethfollow.xyz",
-    "ETHFOLLOW_API_KEY": "your-api-key"
-  }
-}
-```
+### For Developers
 
-### 3. Update API Endpoints
-Replace the placeholder endpoints in `src/utils/api-client.ts` with your actual ethfollow.xyz API endpoints:
-- `/followers/count/{ensName}`
-- `/following/check?follower={follower}&following={following}`
-- `/followers/{ensName}?limit={limit}`
-- `/following/{ensName}?limit={limit}`
+1. **Install Dependencies**
+   ```bash
+   npm install
+   ```
 
-### 4. Deploy
-```bash
-npm run deploy
-```
+2. **Deploy to Cloudflare Workers**
+   ```bash
+   npm run deploy
+   ```
 
-## Development
+3. **Configure Claude Desktop**
+   Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+   ```json
+   {
+     "mcpServers": {
+       "efp-mcp": {
+         "command": "/path/to/efp-mcp/run-workers-mcp.sh",
+         "args": ["node", "/path/to/efp-mcp/local-mcp-server.mjs"]
+       }
+     }
+   }
+   ```
 
-Run locally:
-```bash
-npm run dev
-```
+## Usage
 
-Run tests:
-```bash
-npm test
+See [USAGE_GUIDE.md](./USAGE_GUIDE.md) for comprehensive examples and best practices.
+
+### Quick Examples
+
+```typescript
+// Get follower count
+await getFollowerCount({ addressOrName: "vitalik.eth" })
+// Result: "vitalik.eth has 4811 followers and is following 10 accounts."
+
+// Check who someone follows with tags
+await getFollowing({ 
+  addressOrName: "efp.encrypteddegen.eth",
+  tags: ["top8"]
+})
+// Result: List of top 8 friends with their addresses and tags
+
+// Get profile information
+await fetchAccount({ addressOrName: "brantly.eth" })
+// Result: Complete profile with ENS records, avatar, social links
 ```
 
 ## Project Structure
 ```
 efp-mcp/
 ├── src/
-│   ├── index.ts          # Main MCP server
-│   ├── context/          # Context files
-│   │   ├── README.md     # General context
-│   │   └── api-guide.md  # API documentation
-│   ├── types/            # TypeScript types
-│   │   └── api.ts        # API response types
-│   └── utils/            # Utilities
-│       └── api-client.ts # API client
-├── wrangler.jsonc        # Cloudflare Worker config
-└── package.json
+│   ├── index.ts              # Main worker implementation
+│   ├── index-workers-mcp.ts  # MCP-compatible wrapper
+│   ├── types/                # TypeScript types
+│   └── utils/                # API client and utilities
+├── local-mcp-server.mjs      # Local MCP proxy server
+├── run-workers-mcp.sh        # Node.js compatibility wrapper
+├── wrangler.json             # Cloudflare Worker config
+├── MCP-SETUP-GUIDE.md        # Claude Desktop setup
+└── USAGE_GUIDE.md            # Comprehensive usage guide
 ```
 
-## Usage Examples
+## Architecture
 
-Once deployed, the MCP server can answer queries like:
-- "How many followers does brantly.eth have?"
-- "Does encrypteddegen.eth follow tahubucat.eth?"
-- "Show me the first 20 followers of vitalik.eth"
-- "Who is ens.eth following?"
+The EFP MCP server operates as a Cloudflare Worker that:
+1. Receives MCP requests via the local proxy server
+2. Calls the EFP API at `https://api.ethfollow.xyz/api/v1`
+3. Returns formatted responses optimized for AI consumption
 
-## Context System
+### Key Components
 
-The server includes a flexible context management system that automatically provides relevant information to the LLM.
+- **Cloudflare Worker**: Main API integration and business logic
+- **Local MCP Server**: Proxy for Claude Desktop integration
+- **Node.js Wrapper**: Compatibility layer for Node.js v22.12.0+
 
-### Built-in Contexts
+## Contributing
 
-Contexts are organized into categories:
-- **General**: Overview, getting started guides, FAQs
-- **Technical**: API documentation, architecture, deployment
-- **Business**: Domain knowledge, use cases, glossary
-- **Protocols**: Complete documentation for EFP, ENS, SIWE (large files)
+The project is actively maintained and welcomes contributions. The current deployment is fully functional with 25/26 tools working correctly.
 
-### Features
-- Dynamic context loading from multiple sources
-- Category and tag-based organization
-- Context search functionality
-- Large file support with section-based access
-- Easy addition of new contexts
+## License
 
-### Large Protocol Documentation
-
-The server includes comprehensive documentation for:
-- **EFP Complete** (9K+ lines): Full Ethereum Follow Protocol docs
-- **EIK Complete** (40K+ lines): Aggregated Ethereum Identity context
-- **ENS Complete** (22K+ lines): Complete Ethereum Name Service docs  
-- **SIWE Complete** (3K+ lines): Sign-In with Ethereum documentation
-
-These can be accessed as:
-- Full documents: `context://efp-full`
-- Specific sections: `context://efp-full#nft`
-- Search within: Use `searchFileContext` tool
-
-### Tools for Large Contexts
-
-- **searchFileContext**: Search within specific documentation
-- **getFileMetadata**: Get file size and available sections
-- **getFileSection**: Access specific documentation sections
-
-### Adding New Contexts
-See [ADDING_CONTEXTS.md](./ADDING_CONTEXTS.md) for detailed instructions.
-
-Quick examples:
-```typescript
-// Small context (embedded)
-{
-  id: 'my-context',
-  name: 'My Context', 
-  content: 'Your content...',
-  tags: ['relevant', 'tags']
-}
-
-// Large file context
-{
-  id: 'my-docs',
-  filename: 'my-large-file.txt',
-  sections: { 'intro': { startMarker: '# Introduction' } }
-}
-```
-
-## Error Handling
-
-The API client includes error handling for:
-- Network failures
-- Invalid responses
-- API errors
-
-Errors are returned as part of the tool response rather than throwing exceptions.
+See [LICENSE](./LICENSE) for details.

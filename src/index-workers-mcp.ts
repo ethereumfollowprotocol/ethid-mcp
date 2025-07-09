@@ -1,5 +1,5 @@
 import { WorkerEntrypoint } from 'cloudflare:workers';
-import { AccountResponse, FollowerResponse, FollowingResponse, StatsResponse } from './types/api';
+import { FollowerResponse, FollowingResponse } from './types/api';
 import { allContexts, getContextsByCategory, getContextsByTags } from './contexts/index';
 
 export interface Env {
@@ -28,10 +28,10 @@ export default class EFPMCPWorker extends WorkerEntrypoint<Env> {
 			if (!statsResponse.ok) {
 				throw new Error(`API Error: ${statsResponse.status} ${statsResponse.statusText}`);
 			}
-			const stats = (await statsResponse.json()) as StatsResponse;
+			const stats = await statsResponse.json();
 
 			const accountResponse = await fetch(`${this.baseUrl}/users/${addressOrName}/account`);
-			const account = accountResponse.ok ? ((await accountResponse.json()) as AccountResponse) : null;
+			const account = accountResponse.ok ? await accountResponse.json() : null;
 
 			return {
 				content: [
@@ -66,7 +66,7 @@ export default class EFPMCPWorker extends WorkerEntrypoint<Env> {
 
 			url.searchParams.append('limit', limit.toString());
 			if (tags?.length) url.searchParams.append('tags', tags.join(','));
-			if (search) url.searchParams.append('term', search);
+			if (search) url.searchParams.append('term', search); // Use 'term' not 'search'
 
 			const sortMap = {
 				'earliest first': 'earliest',
@@ -114,7 +114,14 @@ export default class EFPMCPWorker extends WorkerEntrypoint<Env> {
 	 * @param sort {string} Sort order: 'earliest first', 'latest first', or 'follower count' (default)
 	 * @return {object} List of following with their details
 	 */
-	async getFollowing(params: { addressOrName: string; limit?: number; offset?: number; tags?: string[]; search?: string; sort?: string }) {
+	async getFollowing(params: { 
+		addressOrName: string; 
+		limit?: number; 
+		offset?: number;
+		tags?: string[]; 
+		search?: string; 
+		sort?: string 
+	}) {
 		const { addressOrName, limit = 10, offset = 0, tags, search, sort = 'follower count' } = params;
 		try {
 			// Use searchFollowing endpoint if search term is provided
@@ -171,40 +178,56 @@ export default class EFPMCPWorker extends WorkerEntrypoint<Env> {
 	 */
 	async searchContexts(params: { query: string; category?: string }) {
 		const { query, category } = params;
-		
-		// Get contexts based on category if specified
-		const contextsToSearch = category ? getContextsByCategory(category) : allContexts;
-		
-		const lowerQuery = query.toLowerCase();
-		const matches = contextsToSearch
-			.filter(context => {
-				const matchesQuery = 
-					context.id.toLowerCase().includes(lowerQuery) ||
-					context.name.toLowerCase().includes(lowerQuery) ||
-					context.description?.toLowerCase().includes(lowerQuery) ||
-					context.content?.toLowerCase().includes(lowerQuery) ||
-					context.tags?.some(tag => tag.toLowerCase().includes(lowerQuery));
-				return matchesQuery;
-			})
-			.map(context => ({
-				id: context.id,
-				name: context.name,
-				description: context.description,
-				category: context.category,
-				tags: context.tags,
-				content: context.content ? context.content.substring(0, 500) + (context.content.length > 500 ? '...' : '') : 'No content available'
-			}));
+		try {
+			const lowerQuery = query.toLowerCase();
+			let contextsToSearch = allContexts;
 
-		return {
-			content: [
-				{
-					type: 'text',
-					text: matches.length > 0 
-						? matches.map((m) => `**${m.name}** (${m.category})\n${m.description}\nTags: ${m.tags?.join(', ') || 'None'}\n\n${m.content}\n---`).join('\n')
-						: `No contexts found matching "${query}"${category ? ` in category "${category}"` : ''}`,
-				},
-			],
-		};
+			// Filter by category if provided
+			if (category) {
+				contextsToSearch = getContextsByCategory(category);
+			}
+
+			// Search through contexts
+			const matches = contextsToSearch.filter(context => {
+				const searchText = `${context.id} ${context.name} ${context.description} ${context.content} ${context.tags?.join(' ') || ''}`.toLowerCase();
+				return searchText.includes(lowerQuery);
+			});
+
+			if (matches.length === 0) {
+				return {
+					content: [
+						{
+							type: 'text',
+							text: `No contexts found matching "${query}"${category ? ` in category "${category}"` : ''}`,
+						},
+					],
+				};
+			}
+
+			// Format results
+			const formattedMatches = matches.map(context => {
+				const tags = context.tags?.length ? ` [${context.tags.join(', ')}]` : '';
+				return `## ${context.name}${tags}\n**Category:** ${context.category}\n**Description:** ${context.description}\n\n${context.content}\n\n---`;
+			});
+
+			return {
+				content: [
+					{
+						type: 'text',
+						text: `Found ${matches.length} context${matches.length > 1 ? 's' : ''} matching "${query}":\n\n${formattedMatches.join('\n')}`,
+					},
+				],
+			};
+		} catch (error) {
+			return {
+				content: [
+					{
+						type: 'text',
+						text: `Error searching contexts: ${error instanceof Error ? error.message : 'Unknown error'}`,
+					},
+				],
+			};
+		}
 	}
 
 	/**

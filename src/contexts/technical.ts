@@ -1,12 +1,12 @@
 import type { ContextFile } from '../types/context';
 
 export const technicalContexts: ContextFile[] = [
-  {
-    id: 'api-guide',
-    name: 'EFP API Reference',
-    description: 'Complete reference for EFP API endpoints and usage',
-    category: 'technical',
-    content: `# EFP API Integration Guide
+	{
+		id: 'api-guide',
+		name: 'EFP API Reference',
+		description: 'Complete reference for EFP API endpoints and usage',
+		category: 'technical',
+		content: `# EFP API Integration Guide
 
 ## Current API Endpoints
 
@@ -43,20 +43,20 @@ Set the \`EFP_API_URL\` environment variable in your \`wrangler.jsonc\`:
 }
 \`\`\`
 
-## Available MCP Tools (28 Total)
+## Available MCP Tools (27 Total)
 
-### API Tools (21):
+### API Tools (22):
 - Basic queries: getFollowerCount, getFollowers, getFollowing
 - Relationship checks: checkFollowing, checkFollower
-- Profile data: fetchAccount, fetchProfileStats, fetchProfileLists, etc.
+- Profile data: fetchAccount, fetchProfileStats, fetchProfileLists, fetchProfileBadges, fetchProfileQRCode
+- Advanced features: fetchProfileFollowing, fetchProfileFollowers
 - Tag management: fetchFollowingTags, fetchFollowerTags
+- Social graph: fetchFollowState, fetchNotifications
 - Discovery: fetchRecommendations, fetchLeaderboard
+- List management: fetchPoapLink, fetchListState, fetchListsForUser
 
-### Context Tools (4):
+### Context Tools (1):
 - searchContexts: Search across usage contexts
-- searchFileContext: Search within specific context files
-- getFileMetadata: Get context file metadata
-- getFileSection: Get specific context sections
 
 ### AI Helper Tools (4):
 - getBestPractices: Get best practices for scenarios
@@ -88,15 +88,15 @@ Consider adding error handling for:
 ## Response Format
 
 Ensure your API responses match the expected format or update the response parsing in the MCP server accordingly.`,
-    mimeType: 'text/markdown',
-    tags: ['api', 'technical', 'endpoints']
-  },
-  {
-    id: 'architecture',
-    name: 'Architecture Overview',
-    description: 'Technical architecture of the EthFollow MCP',
-    category: 'technical',
-    content: `# EthFollow MCP Architecture
+		mimeType: 'text/markdown',
+		tags: ['api', 'technical', 'endpoints'],
+	},
+	{
+		id: 'architecture',
+		name: 'Architecture Overview',
+		description: 'Technical architecture of the Ethereum Follow Protocol MCP',
+		category: 'technical',
+		content: `# Ethereum Follow Protocol MCP Architecture
 
 ## Components
 
@@ -124,7 +124,7 @@ Ensure your API responses match the expected format or update the response parsi
 
 1. User Query → MCP Tool
 2. Tool → API Client
-3. API Client → EthFollow API
+3. API Client → Ethereum Follow Protocol API
 4. Response → Tool → User
 
 ## Extensibility
@@ -132,15 +132,15 @@ Ensure your API responses match the expected format or update the response parsi
 - Add new tools in index.ts
 - Add new contexts in src/contexts/
 - Extend API client for new endpoints`,
-    mimeType: 'text/markdown',
-    tags: ['architecture', 'technical', 'design']
-  },
-  {
-    id: 'deployment',
-    name: 'Deployment Guide',
-    description: 'How to deploy the EthFollow MCP',
-    category: 'technical',
-    content: `# Deployment Guide
+		mimeType: 'text/markdown',
+		tags: ['architecture', 'technical', 'design'],
+	},
+	{
+		id: 'deployment',
+		name: 'Deployment Guide',
+		description: 'How to deploy the Ethereum Follow Protocol MCP',
+		category: 'technical',
+		content: `# Deployment Guide
 
 ## Local Development
 
@@ -168,8 +168,7 @@ npm run deploy
 - None (uses defaults)
 
 ### Optional
-- \`ETHFOLLOW_API_URL\`: Custom API endpoint
-- \`ETHFOLLOW_API_KEY\`: API authentication key
+- \`EFP_API_URL\`: Custom API endpoint
 
 ## Monitoring
 
@@ -191,7 +190,7 @@ npm run deploy
 1. Check wrangler logs
 2. Verify API endpoints
 3. Test with known ENS names`,
-    mimeType: 'text/markdown',
-    tags: ['deployment', 'devops', 'production']
-  }
+		mimeType: 'text/markdown',
+		tags: ['deployment', 'devops', 'production'],
+	},
 ];

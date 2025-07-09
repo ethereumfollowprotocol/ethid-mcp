@@ -1,15 +1,15 @@
 import type { ContextFile } from '../types/context';
 
 export const businessContexts: ContextFile[] = [
-  {
-    id: 'business-context',
-    name: 'Business Context',
-    description: 'Business rules and domain knowledge',
-    category: 'business',
-    content: `# EthFollow Business Context
+	{
+		id: 'business-context',
+		name: 'Business Context',
+		description: 'Business rules and domain knowledge',
+		category: 'business',
+		content: `# Ethereum Follow Protocol Business Context
 
-## What is EthFollow?
-EthFollow is a social graph protocol built on Ethereum that allows ENS name holders to follow each other, creating a decentralized social network.
+## What is Ethereum Follow Protocol?
+Ethereum Follow Protocol is a social graph protocol built on Ethereum that allows ENS name holders to follow each other, creating a decentralized social network.
 
 ## Key Concepts
 - **ENS Names**: Ethereum Name Service names (e.g., vitalik.eth) serve as user identities
@@ -28,15 +28,15 @@ EthFollow is a social graph protocol built on Ethereum that allows ENS name hold
 - Reputation systems
 - Content curation
 - Community building`,
-    mimeType: 'text/markdown',
-    tags: ['business', 'domain', 'rules']
-  },
-  {
-    id: 'use-cases',
-    name: 'Use Cases & Examples',
-    description: 'Real-world use cases for EthFollow',
-    category: 'business',
-    content: `# EthFollow Use Cases & Examples
+		mimeType: 'text/markdown',
+		tags: ['business', 'domain', 'rules'],
+	},
+	{
+		id: 'use-cases',
+		name: 'Use Cases & Examples',
+		description: 'Real-world use cases for Ethereum Follow Protocol',
+		category: 'business',
+		content: `# Ethereum Follow Protocol Use Cases & Examples
 
 ## Social Discovery
 Find interesting people in Web3 by exploring who prominent figures follow.
@@ -72,15 +72,15 @@ Use social graphs for governance participation.
 ### Example Use:
 - Weight votes by follower count
 - Identify influential community members`,
-    mimeType: 'text/markdown',
-    tags: ['usecases', 'examples', 'business']
-  },
-  {
-    id: 'glossary',
-    name: 'Glossary',
-    description: 'Key terms and definitions',
-    category: 'business',
-    content: `# EthFollow Glossary
+		mimeType: 'text/markdown',
+		tags: ['usecases', 'examples', 'business'],
+	},
+	{
+		id: 'glossary',
+		name: 'Glossary',
+		description: 'Key terms and definitions',
+		category: 'business',
+		content: `# Ethereum Follow Protocol Glossary
 
 ## Terms & Definitions
 
@@ -118,7 +118,7 @@ ENS names that follow and are followed by many others.
 
 ### Communities
 Clusters of ENS names with high mutual following.`,
-    mimeType: 'text/markdown',
-    tags: ['glossary', 'terminology', 'definitions']
-  }
+		mimeType: 'text/markdown',
+		tags: ['glossary', 'terminology', 'definitions'],
+	},
 ];
