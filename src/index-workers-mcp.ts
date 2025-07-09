@@ -1,11 +1,13 @@
 import { WorkerEntrypoint } from 'cloudflare:workers';
 import { FollowerResponse, FollowingResponse } from './types/api';
 import { allContexts, getContextsByCategory, getContextsByTags } from './contexts/index';
+import { createDynamicContexts, dynamicContexts } from './contexts/dynamic';
 
 export interface Env {
 	EFP_API_URL?: string;
 	EFP_API_KEY?: string;
 	CONTEXT_KV?: any;
+	EFP_GOOGLE_DOC_ID?: string;
 }
 
 export default class EFPMCPWorker extends WorkerEntrypoint<Env> {
@@ -178,43 +180,46 @@ export default class EFPMCPWorker extends WorkerEntrypoint<Env> {
 	 */
 	async searchContexts(params: { query: string; category?: string }) {
 		const { query, category } = params;
+		
 		try {
+			// Fetch dynamic contexts (pass env for Cloudflare Workers)
+			const dynamicContextsArray = await createDynamicContexts(this.env);
+			
+			// Combine static and dynamic contexts
+			const allAvailableContexts = [...allContexts, ...dynamicContexts, ...dynamicContextsArray];
+			
+			// Get contexts based on category if specified
+			const contextsToSearch = category 
+				? allAvailableContexts.filter(context => context.category === category)
+				: allAvailableContexts;
+			
 			const lowerQuery = query.toLowerCase();
-			let contextsToSearch = allContexts;
-
-			// Filter by category if provided
-			if (category) {
-				contextsToSearch = getContextsByCategory(category);
-			}
-
-			// Search through contexts
-			const matches = contextsToSearch.filter(context => {
-				const searchText = `${context.id} ${context.name} ${context.description} ${context.content} ${context.tags?.join(' ') || ''}`.toLowerCase();
-				return searchText.includes(lowerQuery);
-			});
-
-			if (matches.length === 0) {
-				return {
-					content: [
-						{
-							type: 'text',
-							text: `No contexts found matching "${query}"${category ? ` in category "${category}"` : ''}`,
-						},
-					],
-				};
-			}
-
-			// Format results
-			const formattedMatches = matches.map(context => {
-				const tags = context.tags?.length ? ` [${context.tags.join(', ')}]` : '';
-				return `## ${context.name}${tags}\n**Category:** ${context.category}\n**Description:** ${context.description}\n\n${context.content}\n\n---`;
-			});
+			const matches = contextsToSearch
+				.filter(context => {
+					const matchesQuery = 
+						context.id.toLowerCase().includes(lowerQuery) ||
+						context.name.toLowerCase().includes(lowerQuery) ||
+						context.description?.toLowerCase().includes(lowerQuery) ||
+						context.content?.toLowerCase().includes(lowerQuery) ||
+						context.tags?.some(tag => tag.toLowerCase().includes(lowerQuery));
+					return matchesQuery;
+				})
+				.map(context => ({
+					id: context.id,
+					name: context.name,
+					description: context.description,
+					category: context.category,
+					tags: context.tags,
+					content: context.content ? context.content.substring(0, 500) + (context.content.length > 500 ? '...' : '') : 'No content available'
+				}));
 
 			return {
 				content: [
 					{
 						type: 'text',
-						text: `Found ${matches.length} context${matches.length > 1 ? 's' : ''} matching "${query}":\n\n${formattedMatches.join('\n')}`,
+						text: matches.length > 0 
+							? matches.map((m) => `**${m.name}** (${m.category})\n${m.description}\nTags: ${m.tags?.join(', ') || 'None'}\n\n${m.content}\n---`).join('\n')
+							: `No contexts found matching "${query}"${category ? ` in category "${category}"` : ''}`,
 					},
 				],
 			};

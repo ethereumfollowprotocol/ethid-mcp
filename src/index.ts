@@ -1,11 +1,13 @@
 import { WorkerEntrypoint } from 'cloudflare:workers';
 import { AccountResponse, FollowerResponse, FollowingResponse, StatsResponse } from './types/api';
 import { allContexts, getContextsByCategory, getContextsByTags } from './contexts/index';
+import { createDynamicContexts, dynamicContexts } from './contexts/dynamic';
 
 export interface Env {
 	EFP_API_URL?: string;
 	EFP_API_KEY?: string;
 	CONTEXT_KV?: any;
+	EFP_GOOGLE_DOC_ID?: string;
 }
 
 export default class EFPMCPWorker extends WorkerEntrypoint<Env> {
@@ -172,39 +174,58 @@ export default class EFPMCPWorker extends WorkerEntrypoint<Env> {
 	async searchContexts(params: { query: string; category?: string }) {
 		const { query, category } = params;
 		
-		// Get contexts based on category if specified
-		const contextsToSearch = category ? getContextsByCategory(category) : allContexts;
-		
-		const lowerQuery = query.toLowerCase();
-		const matches = contextsToSearch
-			.filter(context => {
-				const matchesQuery = 
-					context.id.toLowerCase().includes(lowerQuery) ||
-					context.name.toLowerCase().includes(lowerQuery) ||
-					context.description?.toLowerCase().includes(lowerQuery) ||
-					context.content?.toLowerCase().includes(lowerQuery) ||
-					context.tags?.some(tag => tag.toLowerCase().includes(lowerQuery));
-				return matchesQuery;
-			})
-			.map(context => ({
-				id: context.id,
-				name: context.name,
-				description: context.description,
-				category: context.category,
-				tags: context.tags,
-				content: context.content ? context.content.substring(0, 500) + (context.content.length > 500 ? '...' : '') : 'No content available'
-			}));
+		try {
+			// Fetch dynamic contexts (pass env for Cloudflare Workers)
+			const dynamicContextsArray = await createDynamicContexts(this.env);
+			
+			// Combine static and dynamic contexts
+			const allAvailableContexts = [...allContexts, ...dynamicContexts, ...dynamicContextsArray];
+			
+			// Get contexts based on category if specified
+			const contextsToSearch = category 
+				? allAvailableContexts.filter(context => context.category === category)
+				: allAvailableContexts;
+			
+			const lowerQuery = query.toLowerCase();
+			const matches = contextsToSearch
+				.filter(context => {
+					const matchesQuery = 
+						context.id.toLowerCase().includes(lowerQuery) ||
+						context.name.toLowerCase().includes(lowerQuery) ||
+						context.description?.toLowerCase().includes(lowerQuery) ||
+						context.content?.toLowerCase().includes(lowerQuery) ||
+						context.tags?.some(tag => tag.toLowerCase().includes(lowerQuery));
+					return matchesQuery;
+				})
+				.map(context => ({
+					id: context.id,
+					name: context.name,
+					description: context.description,
+					category: context.category,
+					tags: context.tags,
+					content: context.content ? context.content.substring(0, 500) + (context.content.length > 500 ? '...' : '') : 'No content available'
+				}));
 
-		return {
-			content: [
-				{
-					type: 'text',
-					text: matches.length > 0 
-						? matches.map((m) => `**${m.name}** (${m.category})\n${m.description}\nTags: ${m.tags?.join(', ') || 'None'}\n\n${m.content}\n---`).join('\n')
-						: `No contexts found matching "${query}"${category ? ` in category "${category}"` : ''}`,
-				},
-			],
-		};
+			return {
+				content: [
+					{
+						type: 'text',
+						text: matches.length > 0 
+							? matches.map((m) => `**${m.name}** (${m.category})\n${m.description}\nTags: ${m.tags?.join(', ') || 'None'}\n\n${m.content}\n---`).join('\n')
+							: `No contexts found matching "${query}"${category ? ` in category "${category}"` : ''}`,
+					},
+				],
+			};
+		} catch (error) {
+			return {
+				content: [
+					{
+						type: 'text',
+						text: `Error searching contexts: ${error instanceof Error ? error.message : 'Unknown error'}`,
+					},
+				],
+			};
+		}
 	}
 
 	/**

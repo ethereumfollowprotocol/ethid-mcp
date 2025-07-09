@@ -4,12 +4,12 @@
 	"main": "src/index.ts",
 	"compatibility_date": "2025-06-20",
 	"compatibility_flags": ["nodejs_compat"],
-	"account_id": "82fd12894541c76286f928562ffa29fa",
+	"account_id": "YOUR_ACCOUNT_ID",
 	"observability": {
 		"enabled": true
 	},
 	"vars": {
 		"EFP_API_URL": "https://api.ethfollow.xyz/api/v1",
-		"EFP_GOOGLE_DOC_ID": "15PGNOls446-IpM1GHEnyfxh-cF9O3SGNm6a0h6fwH20"
+		"EFP_GOOGLE_DOC_ID": "YOUR_GOOGLE_DOC_ID_HERE"
 	}
 }
