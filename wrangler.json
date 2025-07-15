@@ -2,14 +2,29 @@
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "efp-mcp",
 	"main": "src/index.ts",
-	"compatibility_date": "2025-06-20",
+	"compatibility_date": "2025-03-10",
 	"compatibility_flags": ["nodejs_compat"],
 	"account_id": "82fd12894541c76286f928562ffa29fa",
+	"migrations": [
+		{
+			"new_sqlite_classes": ["EFPMCPAgent"],
+			"tag": "v1"
+		}
+	],
+	"durable_objects": {
+		"bindings": [
+			{
+				"class_name": "EFPMCPAgent",
+				"name": "MCP_OBJECT"
+			}
+		]
+	},
 	"observability": {
 		"enabled": true
 	},
 	"vars": {
 		"EFP_API_URL": "https://api.ethfollow.xyz/api/v1",
-		"EFP_GOOGLE_DOC_ID": "15PGNOls446-IpM1GHEnyfxh-cF9O3SGNm6a0h6fwH20"
+		"EFP_GOOGLE_DOC_ID": "15PGNOls446-IpM1GHEnyfxh-cF9O3SGNm6a0h6fwH20",
+		"ENS_WORKER_URL": "https://ens.ethfollow.xyz"
 	}
 }

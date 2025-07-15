@@ -123,7 +123,7 @@ To get all tagged users efficiently:
   {
     id: 'complete-tool-reference',
     name: 'Complete Tool Reference',
-    description: 'Comprehensive reference for all 27 EFP MCP tools with examples',
+    description: 'Comprehensive reference for all 22 EFP MCP tools with examples',
     category: 'technical',
     content: `# Complete EFP MCP Tool Reference
 

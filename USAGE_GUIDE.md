@@ -4,6 +4,19 @@ The most comprehensive guide for using the Ethereum Follow Protocol MCP server. 
 
 ## Quick Start
 
+### 0. Initialize Your AI Assistant (CRITICAL)
+
+**🚀 BEFORE doing anything else, run the initialization prompt from [EFP_MCP_INITIALIZATION_PROMPT.md](./EFP_MCP_INITIALIZATION_PROMPT.md)**
+
+This loads essential best practices, tool guidance, and efficiency tips that ensure:
+
+- Optimal tool selection for specific tasks
+- Efficient ENS resolution using `fetchBulkAccounts`
+- Proper tag querying patterns
+- Performance optimization strategies
+
+**Why this matters:** Without initialization, your AI might use inefficient patterns like resolving ENS names individually instead of using bulk operations, or miss the optimal tag querying workflow.
+
 ### 1. Deploy the MCP Server
 
 The MCP server is already deployed and available at: `https://efp-mcp.efp.workers.dev`
@@ -24,7 +37,7 @@ In Claude Code, add the MCP server:
 
 ```bash
 # Add the EthFollow MCP server
-claude mcp add --transport http efp-mcp https://efp-mcp.efp.workers.dev
+claude mcp add --transport sse efp-mcp https://efp-mcp.efp.workers.dev/sse
 ```
 
 ### 3. Start Using
@@ -43,12 +56,15 @@ Now you can ask Claude questions that will use your EthFollow MCP!
 ### Basic Query Tools
 
 #### getFollowerCount
+
 Get follower and following counts for any address or ENS name.
 
 **Parameters:**
+
 - `addressOrName` (required): ENS name or Ethereum address
 
 **Example:**
+
 ```
 "How many followers does vitalik.eth have?"
 ```
@@ -56,9 +72,11 @@ Get follower and following counts for any address or ENS name.
 **Response:** `vitalik.eth has 4800 followers and 10 following`
 
 #### getFollowers
+
 List followers with advanced filtering and search capabilities.
 
 **Parameters:**
+
 - `addressOrName` (required): Target address/ENS
 - `limit` (optional): Number of results (default: 10)
 - `tags` (optional): Array of tags to filter by
@@ -66,6 +84,7 @@ List followers with advanced filtering and search capabilities.
 - `sort` (optional): "earliest first", "latest first", "follower count"
 
 **Examples:**
+
 ```
 "Show me the first 20 followers of brantly.eth"
 "Get followers of vitalik.eth tagged with 'ethereum'"
@@ -73,9 +92,11 @@ List followers with advanced filtering and search capabilities.
 ```
 
 #### getFollowing
+
 List who someone follows with the same filtering options as getFollowers.
 
 **Advanced Usage:**
+
 ```
 "Show me everyone brantly.eth follows tagged with 'top8'"
 "Get efp.eth's following sorted by follower count"
@@ -84,13 +105,16 @@ List who someone follows with the same filtering options as getFollowers.
 ### Relationship Checking Tools
 
 #### checkFollowing
+
 Check if a specific EFP list follows an address.
 
 **Parameters:**
+
 - `list` (required): List ID number
 - `following` (required): Address/ENS being checked
 
 **Example:**
+
 ```
 "Does list 6509 follow brantly.eth?"
 ```
@@ -98,13 +122,16 @@ Check if a specific EFP list follows an address.
 **Response:** `List 6509 is following brantly.eth` or `List 6509 is not following brantly.eth`
 
 #### checkFollower
+
 Check if one address follows another at the user level.
 
 **Parameters:**
+
 - `addressOrName` (required): Target address/ENS
 - `follower` (required): Potential follower address/ENS
 
 **Example:**
+
 ```
 "Does vitalik.eth follow brantly.eth?"
 ```
@@ -114,30 +141,37 @@ Check if one address follows another at the user level.
 ### Profile Information Tools
 
 #### fetchAccount
+
 Get complete account information including ENS data.
 
 **Parameters:**
+
 - `addressOrName` (required): Address or ENS name
 
 **Returns:** Complete profile data with ENS name, avatar, and metadata.
 
 #### fetchProfileStats
+
 Get detailed statistics with optional live data.
 
 **Parameters:**
+
 - `addressOrName` (required): Target address/ENS
 - `list` (optional): Specific list ID
 - `isLive` (optional): Get real-time data (boolean)
 
 **Example:**
+
 ```
 "Get live stats for vitalik.eth"
 ```
 
 #### fetchProfileLists
+
 Get all EFP lists owned by an address.
 
 **Example Output:**
+
 ```
 Profile lists for vitalik.eth:
 Primary list: 6509
@@ -147,17 +181,21 @@ List 6510
 ```
 
 #### fetchProfileBadges
+
 Get POAP badges for a profile.
 
 #### fetchProfileQRCode
+
 Generate QR code for a profile.
 
 ### Advanced Query Tools
 
 #### fetchProfileFollowing
+
 Advanced following query with pagination and comprehensive filtering.
 
 **Parameters:**
+
 - `addressOrName` (required): Target address/ENS
 - `limit` (optional): Results per page
 - `pageParam` (optional): Page number
@@ -166,19 +204,23 @@ Advanced following query with pagination and comprehensive filtering.
 - `sort` (optional): Sort method
 
 #### fetchProfileFollowers
+
 Advanced followers query with same parameters as fetchProfileFollowing.
 
 ### Tag Management Tools
 
 #### fetchFollowingTags
+
 Get tag statistics for accounts being followed.
 
 **Example:**
+
 ```
 "What tags does brantly.eth use?"
 ```
 
 **Response:**
+
 ```
 Following tags for brantly.eth:
 top8: 8
@@ -188,55 +230,110 @@ wife: 1
 ```
 
 #### fetchFollowerTags
+
 Get tag statistics for followers.
+
+### ENS Resolution Tools
+
+#### fetchBulkAccounts
+
+Convert multiple Ethereum addresses to their primary ENS names efficiently.
+
+**Parameters:**
+
+- `addresses` (required): Array of Ethereum addresses (up to 10 recommended)
+
+**Key Features:**
+
+- **Order preservation**: Results maintain same order as input addresses
+- **Fallback handling**: Addresses without ENS names return as addresses
+- **No matching needed**: Direct 1:1 correspondence between input and output
+- **Batch processing**: Efficiently handles multiple addresses at once
+
+**Examples:**
+
+```
+"Convert these addresses to ENS names: 0xd8da6bf26964af9d7eed9e03e53415d37aa96045, 0x849151d7d0bf1f34b70d5cad5149d28cc2308bf1"
+"Resolve the following addresses to readable names: [array of addresses]"
+```
+
+**Response Format:**
+
+```json
+["vitalik.eth", "jesse.xyz", "0x1234...5678"]
+```
+
+**Usage Pattern:**
+
+```typescript
+// Get followers (returns addresses)
+const followers = await getFollowers({ addressOrName: 'brantly.eth' });
+const addresses = followers.map((f) => f.address);
+
+// Convert to ENS names
+const ensNames = await fetchBulkAccounts({ addresses });
+// ensNames[0] corresponds to addresses[0], etc.
+```
 
 ### Discovery & Social Tools
 
 #### fetchRecommendations
+
 Get profile recommendations.
 
 **Parameters:**
+
 - `endpoint` (required): "discover" or "recommended"
 - `addressOrName` (optional): For personalized recommendations
 - `limit` (optional): Number of results
 
 **Examples:**
+
 ```
 "Get 10 recommended profiles to follow"
 "Show me discovery profiles"
 ```
 
 #### fetchLeaderboard
+
 Get top users by follower count.
 
 **Parameters:**
+
 - `limit` (optional): Number of results
 - `pageParam` (optional): Page number
 
 **Example:**
+
 ```
 "Show me the top 10 users by follower count"
 ```
 
 #### fetchNotifications
+
 Get notifications with time filtering.
 
 **Parameters:**
+
 - `addressOrName` (required): Target address/ENS
 - `hoursAgo` (optional): Time range in hours
 
 ### Specialized Tools
 
 #### fetchFollowState
+
 Get detailed follow state between two addresses.
 
 #### fetchPoapLink
+
 Get POAP claim link for an address.
 
 #### fetchListState
+
 Export complete list state for backup/analysis.
 
 #### fetchListsForUser
+
 Get primary list and all lists for a user.
 
 ## Advanced Usage Patterns
@@ -246,11 +343,13 @@ Get primary list and all lists for a user.
 **The Pattern:** To get all tagged users efficiently:
 
 1. First, get all available tags:
+
 ```
 "What tags does efp.encrypteddegen.eth use?"
 ```
 
 2. Then, get all tagged users at once:
+
 ```
 "Show me everyone efp.encrypteddegen.eth has tagged"
 ```
@@ -258,20 +357,22 @@ Get primary list and all lists for a user.
 **Why This Works:** The MCP automatically uses `fetchFollowingTags` to get available tags, then calls `getFollowing` with all tags as parameters. This is much more efficient than fetching the entire following list and filtering.
 
 **Implementation:**
+
 ```json
 {
-  "name": "getFollowing",
-  "arguments": {
-    "addressOrName": "efp.encrypteddegen.eth",
-    "tags": ["bff", "top8", "based", "irl", "fren", "friend", "ethereum"],
-    "limit": 50
-  }
+	"name": "getFollowing",
+	"arguments": {
+		"addressOrName": "efp.encrypteddegen.eth",
+		"tags": ["bff", "top8", "based", "irl", "fren", "friend", "ethereum"],
+		"limit": 50
+	}
 }
 ```
 
 ### Multi-Step Workflows
 
 #### Complete User Analysis
+
 ```
 1. "Get live stats for vitalik.eth"
 2. "Show me vitalik.eth's top8 tagged followers"
@@ -280,6 +381,7 @@ Get primary list and all lists for a user.
 ```
 
 #### Relationship Investigation
+
 ```
 1. "Does brantly.eth follow vitalik.eth?"
 2. "Get brantly.eth's following list tagged with 'top8'"
@@ -289,11 +391,13 @@ Get primary list and all lists for a user.
 ### Data Freshness Strategies
 
 **Use `isLive: true` for:**
+
 - Real-time statistics
 - Current follower counts
 - Live relationship checks
 
 **Use `fresh: true` for:**
+
 - Blockchain-verified data
 - Critical relationship verification
 - Audit trails
@@ -301,16 +405,19 @@ Get primary list and all lists for a user.
 ### Pagination Best Practices
 
 **Small Queries (< 50 results):** Use single limit parameter
+
 ```json
 { "limit": 20 }
 ```
 
 **Large Queries (> 50 results):** Use pagination
+
 ```json
 { "limit": 50, "pageParam": 1 }
 ```
 
 **Get All Results:** Use allResults flag (use sparingly)
+
 ```json
 { "allResults": true }
 ```
@@ -320,17 +427,20 @@ Get primary list and all lists for a user.
 ### Tool Selection Decision Tree
 
 #### For Follower Counts:
+
 - **Basic counts:** Use `getFollowerCount`
 - **Detailed stats:** Use `fetchProfileStats`
 - **Live data needed:** Use `fetchProfileStats` with `isLive: true`
 
 #### For Following Lists:
+
 - **Simple list:** Use `getFollowing`
 - **With filtering:** Use `getFollowing` with tags/search
 - **Advanced pagination:** Use `fetchProfileFollowing`
 - **All tagged users:** Use the efficient tag pattern
 
 #### For Relationship Checks:
+
 - **User-level following:** Use `checkFollower`
 - **List-level following:** Use `checkFollowing`
 - **Detailed relationship:** Use `fetchFollowState`
@@ -338,12 +448,14 @@ Get primary list and all lists for a user.
 ### Efficient Query Patterns
 
 #### Getting Tagged Users (BEST PRACTICE):
+
 ```
 1. Ask: "What tags does X use?" → fetchFollowingTags
 2. Use all tags in: getFollowing with tags parameter
 ```
 
 #### User Discovery:
+
 ```
 1. Get recommendations → fetchRecommendations
 2. Get leaderboard → fetchLeaderboard
@@ -351,6 +463,7 @@ Get primary list and all lists for a user.
 ```
 
 #### Profile Analysis:
+
 ```
 1. Basic info → fetchAccount
 2. Statistics → fetchProfileStats (with isLive if needed)
@@ -361,11 +474,13 @@ Get primary list and all lists for a user.
 ### Error Handling
 
 **Common Responses:**
+
 - `"Following"` / `"Not Following"` / `"Blocked"` - Relationship status
 - `"Error: addressOrName is required"` - Missing parameter
 - `"Error: Invalid ENS name"` - Bad input format
 
 **Fallback Strategies:**
+
 1. If ENS name fails, try with .eth suffix
 2. If address fails, try ENS resolution
 3. If live data fails, try without isLive flag
@@ -375,14 +490,17 @@ Get primary list and all lists for a user.
 ### Complete Conversation Flows
 
 #### Discovering Tag Patterns
+
 **User:** "Show me everyone efp.encrypteddegen.eth has tagged"
 
 **AI Process:**
+
 1. Use `fetchFollowingTags` to get available tags
 2. Use `getFollowing` with all tags as filter
 3. Format response showing users with their tags
 
 **Result:**
+
 ```
 efp.encrypteddegen.eth has tagged 11 people:
 1. vitalik.eth [ethereum, top8]
@@ -399,24 +517,50 @@ efp.encrypteddegen.eth has tagged 11 people:
 ```
 
 #### Relationship Investigation
+
 **User:** "Does vitalik.eth follow brantly.eth and what tags does brantly have?"
 
 **AI Process:**
+
 1. Use `checkFollower` for relationship check
 2. Use `getFollowing` with search for brantly in vitalik's list
 3. Use `fetchFollowingTags` for brantly's tags
 
 #### Community Analysis
+
 **User:** "Who are the top influencers and who do they follow?"
 
 **AI Process:**
+
 1. Use `fetchLeaderboard` for top users
 2. For each user, use `getFollowing` with top8 tag
 3. Use `fetchProfileStats` for detailed metrics
 
+#### ENS Resolution Workflow
+
+**User:** "Show me who brantly.eth follows with readable names"
+
+**AI Process:**
+
+1. Use `getFollowing` to get following list (returns addresses)
+2. Extract addresses from response
+3. Use `fetchBulkAccounts` to resolve addresses to ENS names
+4. Present combined data with both addresses and ENS names
+
+**Result:**
+
+```
+brantly.eth follows 20 people:
+1. vitalik.eth (0xd8da6bf26964af9d7eed9e03e53415d37aa96045)
+2. jesse.xyz (0x849151d7d0bf1f34b70d5cad5149d28cc2308bf1)
+3. shannon1.eth (0x0d3f5a7a1ee78e743e25c18e66942fcbcd84ccad)
+...
+```
+
 ### Performance Examples
 
 #### Fast Tag Query (Recommended):
+
 ```
 Time: ~2 seconds
 Steps: fetchFollowingTags → getFollowing with tags
@@ -424,6 +568,7 @@ Result: All tagged users with their tags
 ```
 
 #### Slow Tag Query (Avoid):
+
 ```
 Time: ~10 seconds
 Steps: getFollowing(limit: 200) → filter locally
@@ -435,16 +580,19 @@ Result: Same data but much slower
 ### Response Time Optimization
 
 **Fastest Queries (<1s):**
+
 - `getFollowerCount`
 - `checkFollower`
 - `checkFollowing`
 
 **Medium Queries (1-3s):**
+
 - `getFollowing` with filters
 - `fetchProfileStats`
 - `fetchRecommendations`
 
 **Slower Queries (3-5s):**
+
 - Large pagination requests
 - `fetchLeaderboard`
 - `allResults: true` queries
@@ -452,11 +600,13 @@ Result: Same data but much slower
 ### Memory-Efficient Patterns
 
 **Use Pagination For:**
+
 - Lists > 50 items
 - Leaderboard queries
 - Large following lists
 
 **Use Limits For:**
+
 - Quick samples
 - Top N results
 - Preview data
@@ -464,11 +614,13 @@ Result: Same data but much slower
 ### Caching Considerations
 
 **Cached by MCP:**
+
 - ENS name resolutions
 - Account data
 - Profile statistics (5 min cache)
 
 **Always Fresh:**
+
 - Live statistics (`isLive: true`)
 - Real-time relationship checks
 - Fresh blockchain data (`fresh: true`)
@@ -478,15 +630,19 @@ Result: Same data but much slower
 ### Common Issues & Solutions
 
 #### "Context not found"
+
 **Problem:** Documentation context not loading
-**Solution:** 
+**Solution:**
+
 - Check that files exist in `src/contexts/files/`
 - Verify section markers in protocol configs
 - Restart MCP server
 
 #### "Tool not available"
+
 **Problem:** MCP server not connected
 **Solution:**
+
 ```bash
 # Check connection
 claude mcp list
@@ -497,15 +653,19 @@ claude mcp add --transport http efp-mcp https://efp-mcp.efp.workers.dev
 ```
 
 #### "API request failed"
+
 **Problem:** EthFollow API issues
 **Solution:**
+
 - Check if ENS name needs .eth suffix
 - Try with Ethereum address instead
 - Use fresh: false for cached data
 
 #### Empty Results
+
 **Problem:** No followers/following found
 **Solution:**
+
 - Verify ENS name is correct
 - Check if user has public lists
 - Try different search terms
@@ -513,24 +673,27 @@ claude mcp add --transport http efp-mcp https://efp-mcp.efp.workers.dev
 ### Debugging Workflows
 
 #### Test Basic Connectivity:
+
 ```bash
 curl https://efp-mcp.efp.workers.dev
 ```
 
 #### Test Specific Tool:
+
 ```json
 {
-  "jsonrpc": "2.0",
-  "id": 1,
-  "method": "tools/call",
-  "params": {
-    "name": "getFollowerCount",
-    "arguments": {"addressOrName": "vitalik.eth"}
-  }
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "tools/call",
+	"params": {
+		"name": "getFollowerCount",
+		"arguments": { "addressOrName": "vitalik.eth" }
+	}
 }
 ```
 
 #### Check Deployment:
+
 ```bash
 npx wrangler tail efp-mcp
 ```
@@ -538,6 +701,7 @@ npx wrangler tail efp-mcp
 ### Common Patterns
 
 #### Pattern 1: User Discovery
+
 ```
 1. Get recommendations → Find interesting users
 2. Check their followers → Understand their network
@@ -546,6 +710,7 @@ npx wrangler tail efp-mcp
 ```
 
 #### Pattern 2: Network Analysis
+
 ```
 1. Get user's following list → See who they follow
 2. For each followed user → Get their stats
@@ -554,6 +719,7 @@ npx wrangler tail efp-mcp
 ```
 
 #### Pattern 3: Tag Investigation
+
 ```
 1. Get all tags used → fetchFollowingTags
 2. Get users by tag → getFollowing with tag filters
@@ -569,9 +735,9 @@ In your `wrangler.jsonc`:
 
 ```json
 {
-  "vars": {
-    "EFP_API_URL": "https://api.ethfollow.xyz/api/v1"
-  }
+	"vars": {
+		"EFP_API_URL": "https://api.ethfollow.xyz/api/v1"
+	}
 }
 ```
 
@@ -607,18 +773,21 @@ claude mcp list
 
 ## Complete Tools Summary
 
-### API Tools (21 Total)
+### API Tools (22 Total)
 
 **Basic Queries (3):**
+
 - `getFollowerCount` - Get follower/following counts
 - `getFollowers` - List followers with filtering
 - `getFollowing` - List following with filtering
 
 **Relationship Checks (2):**
+
 - `checkFollowing` - Check list-level following
 - `checkFollower` - Check user-level following
 
 **Profile Data (5):**
+
 - `fetchAccount` - Complete account data
 - `fetchProfileStats` - Detailed statistics
 - `fetchProfileLists` - All owned lists
@@ -626,19 +795,27 @@ claude mcp list
 - `fetchProfileQRCode` - Generate QR code
 
 **Advanced Queries (2):**
+
 - `fetchProfileFollowing` - Advanced following query
 - `fetchProfileFollowers` - Advanced followers query
 
+**ENS Resolution (1):**
+
+- `fetchBulkAccounts` - Bulk reverse resolution of addresses to ENS names
+
 **Tag Management (2):**
+
 - `fetchFollowingTags` - Following tag statistics
 - `fetchFollowerTags` - Follower tag statistics
 
 **Discovery (3):**
+
 - `fetchRecommendations` - Get recommendations
 - `fetchLeaderboard` - Top users by followers
 - `fetchNotifications` - User notifications
 
 **Specialized (4):**
+
 - `fetchFollowState` - Detailed follow state
 - `fetchPoapLink` - POAP claim links
 - `fetchListState` - Export list state
@@ -647,6 +824,7 @@ claude mcp list
 ### Context Tools (4)
 
 **Documentation Access:**
+
 - `searchFileContext` - Search within docs (efp, eik, ens, siwe)
 - `getFileMetadata` - Get file info and sections
 - `getFileSection` - Get specific documentation sections
@@ -663,18 +841,21 @@ claude mcp list
 ## Best Practices Summary
 
 ### For Developers:
+
 - Use the efficient tag querying pattern
 - Implement proper pagination for large datasets
 - Handle ENS resolution gracefully
 - Cache frequently accessed data appropriately
 
 ### For AI Assistants:
+
 - Always use the tag pattern for getting all tagged users
 - Choose the right tool for the specific use case
 - Handle errors gracefully with fallback strategies
 - Provide context about data freshness when relevant
 
 ### For Performance:
+
 - Use pagination for large queries
 - Limit results appropriately
 - Use live data only when necessary

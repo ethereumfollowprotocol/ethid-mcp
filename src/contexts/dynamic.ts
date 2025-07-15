@@ -5,23 +5,20 @@ export async function createDynamicContexts(env?: any): Promise<ContextFile[]> {
 	const contexts: ContextFile[] = [];
 
 	// Check if Google Doc ID is configured (Cloudflare Workers use env object)
-	const GOOGLE_DOC_ID = env?.EFP_GOOGLE_DOC_ID || process?.env?.EFP_GOOGLE_DOC_ID;
-	
+	const GOOGLE_DOC_ID = env?.EFP_GOOGLE_DOC_ID;
+
 	if (GOOGLE_DOC_ID) {
 		try {
 			// Fetch content from Google Doc (public/published doc)
-			const response = await fetch(
-				`https://docs.google.com/document/d/${GOOGLE_DOC_ID}/export?format=txt`,
-				{
-					headers: {
-						'User-Agent': 'EFP-MCP/1.0'
-					}
-				}
-			);
+			const response = await fetch(`https://docs.google.com/document/d/${GOOGLE_DOC_ID}/export?format=txt`, {
+				headers: {
+					'User-Agent': 'EFP-MCP/1.0',
+				},
+			});
 
 			if (response.ok) {
 				const content = await response.text();
-				
+
 				contexts.push({
 					id: 'efp-team-updates',
 					name: 'EFP Team Updates',
@@ -29,7 +26,7 @@ export async function createDynamicContexts(env?: any): Promise<ContextFile[]> {
 					category: 'updates',
 					content: content,
 					mimeType: 'text/plain',
-					tags: ['team', 'updates', 'ideas', 'roadmap', 'dynamic']
+					tags: ['team', 'updates', 'ideas', 'roadmap', 'dynamic'],
 				});
 			}
 		} catch (error) {
@@ -53,7 +50,7 @@ To enable this feature:
 Example: For URL https://docs.google.com/document/d/ABC123XYZ/edit
 The document ID is: ABC123XYZ`,
 				mimeType: 'text/markdown',
-				tags: ['team', 'updates', 'configuration']
+				tags: ['team', 'updates', 'configuration'],
 			});
 		}
 	} else {
@@ -118,7 +115,7 @@ A: Answer...
 - Maintain a living document of project evolution
 - No need to redeploy MCP for content updates`,
 			mimeType: 'text/markdown',
-			tags: ['setup', 'google-docs', 'dynamic-content']
+			tags: ['setup', 'google-docs', 'dynamic-content'],
 		});
 	}
 
@@ -153,6 +150,6 @@ The EFP MCP supports dynamic content that can be updated without redeploying.
 Dynamic contexts are fetched at runtime when searchContexts is called.
 This ensures the AI always has access to the latest information.`,
 		mimeType: 'text/markdown',
-		tags: ['dynamic', 'features', 'technical']
-	}
+		tags: ['dynamic', 'features', 'technical'],
+	},
 ];

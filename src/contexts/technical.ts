@@ -43,17 +43,15 @@ Set the \`EFP_API_URL\` environment variable in your \`wrangler.jsonc\`:
 }
 \`\`\`
 
-## Available MCP Tools (27 Total)
+## Available MCP Tools (22 Total)
 
-### API Tools (22):
-- Basic queries: getFollowerCount, getFollowers, getFollowing
-- Relationship checks: checkFollowing, checkFollower
-- Profile data: fetchAccount, fetchProfileStats, fetchProfileLists, fetchProfileBadges, fetchProfileQRCode
-- Advanced features: fetchProfileFollowing, fetchProfileFollowers
+### API Tools (18):
+- Basic queries: getProfileStats, getFollowers, getFollowing
+- Relationship checks: checkFollowing, checkFollower, fetchFollowState
+- Profile data: fetchAccount, fetchBulkAccounts, fetchProfileLists, fetchProfileBadges
 - Tag management: fetchFollowingTags, fetchFollowerTags
-- Social graph: fetchFollowState, fetchNotifications
-- Discovery: fetchRecommendations, fetchLeaderboard
-- List management: fetchPoapLink, fetchListState, fetchListsForUser
+- Discovery: fetchNotifications, fetchRecommendations, fetchLeaderboard
+- List management: fetchAllFollowings, fetchListsForUser
 
 ### Context Tools (1):
 - searchContexts: Search across usage contexts
@@ -105,7 +103,7 @@ Ensure your API responses match the expected format or update the response parsi
 - Handles tool registration and execution
 - Manages context resources
 
-### 2. API Client (utils/api-client.ts)
+### 2. API Client
 - Encapsulates all API interactions
 - Handles errors gracefully
 - Supports authentication
