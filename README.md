@@ -112,7 +112,7 @@ The EFP MCP server operates as a Cloudflare Worker that:
 
 ## Contributing
 
-The project is actively maintained and welcomes contributions. The current deployment is fully functional with 25/26 tools working correctly.
+The project is actively maintained and welcomes contributions. The current deployment is fully functional with all tools working correctly.
 
 ## License
 
