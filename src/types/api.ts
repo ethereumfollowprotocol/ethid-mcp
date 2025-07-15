@@ -29,6 +29,16 @@ export interface CheckFollowingResponse {
 	};
 }
 
+export interface CheckFollowerResponse {
+	token_id?: string;
+	address?: `0x${string}`;
+	state: {
+		follow: boolean;
+		block: boolean;
+		mute: boolean;
+	};
+}
+
 export interface FollowersListResponse {
 	followers: FollowerResponse[];
 	total?: number;
@@ -64,6 +74,18 @@ export interface FollowingResponse {
 	tags?: string[];
 	is_blocked?: boolean;
 	is_muted?: boolean;
+}
+
+export type ListStateItem = {
+	version: 1;
+	record_type: 'address' & string;
+	address: Address;
+	tags: string[];
+	ens?: ENSProfile;
+};
+
+export interface ListStateResponse {
+	following: ListStateItem[];
 }
 
 export interface FollowerResponse {
@@ -139,6 +161,9 @@ export interface DiscoverProfile {
 	followers_count?: number;
 	following_count?: number;
 }
+
+export const leaderboardFilters = ['mutuals', 'followers', 'following', 'top8', 'blocked'] as const;
+export type LeaderboardFilter = (typeof leaderboardFilters)[number];
 
 export interface LeaderboardEntry {
 	address: string;
