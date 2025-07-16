@@ -84,15 +84,15 @@ export function registerDiscoveryTools(server: McpServer, baseUrl: string) {
 	// fetchLeaderboard tool
 	server.tool(
 		'fetchLeaderboard',
-		'Get top accounts ranked by followers, activity, and social engagement with filtering options',
+		'Get top accounts ranked by followers, activity, and social engagement with filtering options. Filter should always be included ("mutuals", "followers", "following", "blocked", "top8")',
 		{
 			limit: z.number().optional().describe('Number of results to return'),
 			search: z.string().optional().describe('Search term'),
 			filter: z.enum(leaderboardFilters).optional().describe('Filter criteria'),
-			pageParam: z.number().optional().describe('Page number for pagination'),
+			pageParam: z.number().optional().describe('Page number for pagination (starts with 0)'),
 			direction: z.string().optional().describe('Sort direction'),
 		},
-		async ({ limit = 20, search, filter, pageParam = 0, direction }) => {
+		async ({ limit = 20, search, filter, pageParam = 0, direction = 'desc' }) => {
 			try {
 				const queryParams = formatQueryParams({
 					limit,
@@ -100,7 +100,7 @@ export function registerDiscoveryTools(server: McpServer, baseUrl: string) {
 					sort: filter,
 					direction,
 				});
-				const url = new URL(`${baseUrl}/leaderboard/${search && search.length > 2 ? 'search' : 'ranked'}?${queryParams}`);
+				const url = new URL(`${baseUrl}/leaderboard/${search && search.length > 2 ? 'search' : 'ranked'}?${queryParams}&term=${search}`);
 
 				const response = await fetch(url);
 				if (!response.ok) {

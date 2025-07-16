@@ -3,23 +3,13 @@ import type { ContextFile } from '../types/context';
 // Import all context modules
 import { generalContexts } from './general';
 import { technicalContexts } from './technical';
-import { businessContexts } from './business';
-import { usageGuideContexts } from './usage-guide';
-import { aiGuidelinesContexts } from './ai-guidelines';
 import { protocolContexts } from './protocols-content';
 
 // Export all contexts
-export const allContexts: ContextFile[] = [
-	...generalContexts,
-	...technicalContexts,
-	...businessContexts,
-	...usageGuideContexts,
-	...aiGuidelinesContexts,
-	...protocolContexts,
-];
+export const allContexts: ContextFile[] = [...generalContexts, ...technicalContexts, ...protocolContexts];
 
 // Export individual context groups for selective loading
-export { generalContexts, technicalContexts, businessContexts, usageGuideContexts, aiGuidelinesContexts };
+export { generalContexts, technicalContexts, protocolContexts };
 
 // Helper function to get contexts by category
 export function getContextsByCategory(category: string): ContextFile[] {
