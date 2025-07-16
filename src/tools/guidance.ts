@@ -168,7 +168,7 @@ const resolved = await fetchBulkAccounts({ addresses });
 		async ({ task }) => {
 			const guidance = {
 				'follower-analysis': {
-					tools: ['getProfileStats', 'getFollowers', 'getProfileStats'],
+					tools: ['getProfileStats', 'getFollowers', 'fetchFollowerTags'],
 					description: 'For analyzing followers, start with getProfileStats for overview, then use getFollowers for details.',
 				},
 				'network-exploration': {
@@ -196,6 +196,26 @@ const resolved = await fetchBulkAccounts({ addresses });
 					tools: ['fetchBulkAccounts', 'getFollowers', 'getFollowing'],
 					description: 'For processing multiple addresses, use fetchBulkAccounts for ENS resolution, then other tools for detailed data.',
 				},
+				'documentation': {
+					tools: ['searchContexts', 'getBestPractices', 'getUsagePattern'],
+					description: 'For learning about EFP protocols, features, or technical details, use searchContexts with specific keywords. Categories: "protocols" (EFP, ENS, EIK, SIWE), "usage" (guides, patterns), "technical" (architecture, API).',
+				},
+				'protocol-info': {
+					tools: ['searchContexts with category:"protocols"'],
+					description: 'To understand Ethereum protocols (EFP, ENS, EIK, SIWE), search contexts with the protocol name or use category:"protocols" filter.',
+				},
+				'api-documentation': {
+					tools: ['searchContexts', 'getEfficiencyTips'],
+					description: 'For API usage and technical documentation, searchContexts with keywords like "API", "endpoint", "technical" or specific tool names.',
+				},
+				'getting-started': {
+					tools: ['searchContexts with "quickstart"', 'getUsagePattern', 'getBestPractices'],
+					description: 'New users should searchContexts for "quickstart", "getting started", or "introduction" to find comprehensive guides.',
+				},
+				'troubleshooting': {
+					tools: ['searchContexts', 'getEfficiencyTips', 'getBestPractices'],
+					description: 'For debugging or optimization, search for specific error messages, tool names, or use getEfficiencyTips for performance issues.',
+				},
 			};
 
 			const taskLower = task?.toLowerCase() || '';
@@ -207,7 +227,7 @@ const resolved = await fetchBulkAccounts({ addresses });
 				? `For "${task}":\n\nRecommended tools: ${relevantGuidance[1].tools.join(', ')}\n\n${relevantGuidance[1].description}`
 				: `Available tool categories:\n\n${Object.entries(guidance)
 						.map(([key, g]) => `**${key}**: ${g.tools.join(', ')}\n${g.description}`)
-						.join('\n\n')}`;
+						.join('\n\n')}\n\n## Context Search Categories\n\nUse **searchContexts** with these categories for better results:\n- **"protocols"**: EFP, ENS, EIK, SIWE protocol documentation\n- **"usage"**: Usage guides, patterns, and best practices\n- **"technical"**: API documentation, architecture, and technical details\n\nExample: \`searchContexts({ query: "EFP API", category: "technical" })\``;
 
 			return {
 				content: [
@@ -257,6 +277,28 @@ const resolved = await fetchBulkAccounts({ addresses });
 						'Implement progressive loading for UIs',
 						'Cache frequently accessed data',
 						'Use lightweight endpoints for real-time features',
+					],
+				},
+				'context-search': {
+					title: 'Optimizing Context Search',
+					tips: [
+						'Use specific keywords instead of broad terms (e.g., "EFP API" vs "documentation")',
+						'Use category filters to narrow results: "protocols", "usage", "technical"',
+						'Search for protocol names directly: "EFP", "ENS", "EIK", "SIWE"',
+						'Use tool names for specific guidance: "getFollowers", "fetchAccount"',
+						'Combine multiple short searches rather than one complex query',
+						'Search for error messages or specific issues when troubleshooting',
+					],
+				},
+				'documentation': {
+					title: 'Finding Documentation Efficiently',
+					tips: [
+						'Start with searchContexts for specific topics before using general tools',
+						'Use category:"protocols" for understanding blockchain protocols',
+						'Use category:"usage" for patterns and best practices',
+						'Use category:"technical" for API details and architecture',
+						'Search for "quickstart" or "getting started" for new user guides',
+						'Search for specific error messages when debugging',
 					],
 				},
 			};
