@@ -10,7 +10,7 @@ export const technicalContexts: ContextFile[] = [
 
 ## Current API Endpoints
 
-The EFP MCP server uses these live API endpoints:
+The ETHID MCP server uses these live API endpoints:
 
 ### Core API Endpoints (Live)
 \`\`\`

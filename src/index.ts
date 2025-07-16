@@ -8,7 +8,7 @@ export class EFPMCPAgent extends McpAgent {
 	private envvars: Env;
 
 	server = new McpServer({
-		name: 'EFP MCP',
+		name: 'ETHID MCP',
 		version: '1.0.0',
 	});
 

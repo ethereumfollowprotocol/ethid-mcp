@@ -5,7 +5,7 @@ export function registerGuidanceTools(server: McpServer) {
 	// getBestPractices tool
 	server.tool(
 		'getBestPractices',
-		'Get best practices and recommendations for using EFP MCP tools effectively',
+		'Get best practices and recommendations for using ETHID MCP tools effectively',
 		{
 			scenario: z.string().optional().describe('Usage scenario'),
 		},
@@ -13,7 +13,7 @@ export function registerGuidanceTools(server: McpServer) {
 			const practices = {
 				'bulk-operations': {
 					title: 'Bulk Operations Best Practices',
-					content: `When performing bulk operations with EFP MCP:
+					content: `When performing bulk operations with ETHID MCP:
 
 1. **Use pagination**: For large datasets, use limit and offset/pageParam
 2. **Batch requests**: Group related queries together
@@ -24,7 +24,7 @@ export function registerGuidanceTools(server: McpServer) {
 				},
 				performance: {
 					title: 'Performance Optimization',
-					content: `To optimize EFP MCP performance:
+					content: `To optimize ETHID MCP performance:
 
 1. **Use specific endpoints**: Prefer targeted queries over broad searches
 2. **Limit results**: Only request the data you need
@@ -78,7 +78,7 @@ export function registerGuidanceTools(server: McpServer) {
 	// getUsagePattern tool
 	server.tool(
 		'getUsagePattern',
-		'Get common usage patterns and code examples for specific EFP MCP use cases',
+		'Get common usage patterns and code examples for specific ETHID MCP use cases',
 		{
 			queryType: z.string().optional().describe('Type of query pattern needed'),
 		},
@@ -243,7 +243,7 @@ const resolved = await fetchBulkAccounts({ addresses });
 	// getEfficiencyTips tool
 	server.tool(
 		'getEfficiencyTips',
-		'Get performance optimization tips and efficiency recommendations for EFP MCP usage',
+		'Get performance optimization tips and efficiency recommendations for ETHID MCP usage',
 		{
 			area: z.string().optional().describe('Performance area to optimize'),
 		},

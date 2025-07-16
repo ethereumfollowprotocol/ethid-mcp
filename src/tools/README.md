@@ -1,6 +1,6 @@
-# EFP MCP Tools
+# ETHID MCP Tools
 
-This directory contains the modular tool definitions for the EFP MCP server, organized by functionality.
+This directory contains the modular tool definitions for the ETHID MCP server, organized by functionality.
 
 ## Structure
 

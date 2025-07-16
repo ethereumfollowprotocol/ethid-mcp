@@ -1,8 +1,8 @@
-# EFP MCP Server Initialization Prompt
+# ETHID MCP Server Initialization Prompt
 
 ## Overview
 
-Before starting to use the EFP MCP server, run this initialization prompt to ensure your AI assistant has access to all the best practices, tool guidance, and efficiency tips needed for optimal performance.
+Before starting to use the ETHID MCP server, run this initialization prompt to ensure your AI assistant has access to all the best practices, tool guidance, and efficiency tips needed for optimal performance.
 
 ## The Initialization Prompt
 
@@ -10,9 +10,9 @@ Copy and paste the following prompt into your AI assistant before beginning any 
 
 ---
 
-**🚀 EFP MCP Server Initialization**
+**🚀 ETHID MCP Server Initialization**
 
-Please run the following tools to initialize optimal EFP MCP server usage:
+Please run the following tools to initialize optimal ETHID MCP server usage:
 
 1. **Load Best Practices:**
    - `getBestPractices` with scenario: `bulk-operations`
@@ -37,7 +37,7 @@ Please run the following tools to initialize optimal EFP MCP server usage:
    - `getEfficiencyTips` with area: `bulk-operations`
    - `getEfficiencyTips` with area: `ens-resolution`
 
-After loading these contexts, you'll be optimally configured for EFP MCP server usage. Key reminders:
+After loading these contexts, you'll be optimally configured for ETHID MCP server usage. Key reminders:
 
 - **Always use `fetchBulkAccounts` for ENS resolution** - results maintain input order
 - **Use the efficient tag querying pattern** - get tags first, then filter
@@ -109,4 +109,4 @@ searchContexts with query: "tag filtering efficiency"
 searchContexts with query: "bulk operations best practices"
 ```
 
-This ensures your AI assistant is fully equipped with the knowledge needed for optimal EFP MCP server usage.
+This ensures your AI assistant is fully equipped with the knowledge needed for optimal ETHID MCP server usage.

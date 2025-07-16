@@ -1,4 +1,4 @@
-# EthFollow Protocol MCP Server
+# ETHID MCP Server
 
 An MCP (Model Context Protocol) server that provides comprehensive access to the Ethereum Follow Protocol (EFP) API, enabling social graph queries for Ethereum addresses and ENS names.
 
@@ -31,9 +31,9 @@ An MCP (Model Context Protocol) server that provides comprehensive access to the
 ```json
 {
 	"mcpServers": {
-		"efp-mcp": {
+		"ethid-mcp": {
 			"command": "npx",
-			"args": ["mcp-remote", "https://efp-mcp.efp.workers.dev/sse"]
+			"args": ["mcp-remote", "https://ethid-mcp.efp.workers.dev/sse"]
 		}
 	}
 }
@@ -41,7 +41,7 @@ An MCP (Model Context Protocol) server that provides comprehensive access to the
 
 ## Usage
 
-**🚀 IMPORTANT: Before using the EFP MCP server, run the initialization prompt from [EFP_MCP_INITIALIZATION_PROMPT.md](./EFP_MCP_INITIALIZATION_PROMPT.md) to ensure optimal performance and proper tool usage.**
+**🚀 IMPORTANT: Before using the ETHID MCP server, run the initialization prompt from [ETHID_MCP_INITIALIZATION_PROMPT.md](./ETHID_MCP_INITIALIZATION_PROMPT.md) to ensure optimal performance and proper tool usage.**
 
 See [USAGE_GUIDE.md](./USAGE_GUIDE.md) for comprehensive examples and best practices.
 
@@ -73,7 +73,7 @@ await fetchAccount({ addressOrName: 'brantly.eth' });
 ## Project Structure
 
 ```
-efp-mcp/
+ethid-mcp/
 ├── src/
 │   ├── index.ts              # Main MCP agent implementation
 │   ├── tools/                # Modular tool definitions
@@ -93,12 +93,12 @@ efp-mcp/
 │   └── utils/               # Utility functions
 ├── wrangler.json            # Cloudflare Worker config
 ├── USAGE_GUIDE.md          # Comprehensive usage guide
-└── EFP_MCP_INITIALIZATION_PROMPT.md  # Initialization guide
+└── ETHID_MCP_INITIALIZATION_PROMPT.md  # Initialization guide
 ```
 
 ## Architecture
 
-The EFP MCP server operates as a Cloudflare Worker that:
+The ETHID MCP server operates as a Cloudflare Worker that:
 
 1. Receives MCP requests via the local proxy server
 2. Calls the EFP API at `https://api.ethfollow.xyz/api/v1`

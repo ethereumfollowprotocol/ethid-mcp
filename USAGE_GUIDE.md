@@ -1,4 +1,4 @@
-# The Ultimate EFP MCP Usage Guide
+# The Ultimate ETHID MCP Usage Guide
 
 The most comprehensive guide for using the Ethereum Follow Protocol MCP server. This guide ensures both developers and AI assistants can leverage the full power of the EFP ecosystem efficiently.
 
@@ -6,7 +6,7 @@ The most comprehensive guide for using the Ethereum Follow Protocol MCP server. 
 
 ### 0. Initialize Your AI Assistant (CRITICAL)
 
-**🚀 BEFORE doing anything else, run the initialization prompt from [EFP_MCP_INITIALIZATION_PROMPT.md](./EFP_MCP_INITIALIZATION_PROMPT.md)**
+**🚀 BEFORE doing anything else, run the initialization prompt from [ETHID_MCP_INITIALIZATION_PROMPT.md](./ETHID_MCP_INITIALIZATION_PROMPT.md)**
 
 This loads essential best practices, tool guidance, and efficiency tips that ensure:
 
@@ -19,7 +19,7 @@ This loads essential best practices, tool guidance, and efficiency tips that ens
 
 ### 1. Deploy the MCP Server
 
-The MCP server is already deployed and available at: `https://efp-mcp.efp.workers.dev`
+The MCP server is already deployed and available at: `https://ethid-mcp.efp.workers.dev`
 
 To deploy your own instance:
 
@@ -37,7 +37,7 @@ In Claude Code, add the MCP server:
 
 ```bash
 # Add the EthFollow MCP server
-claude mcp add --transport sse efp-mcp https://efp-mcp.efp.workers.dev/sse
+claude mcp add --transport sse ethid-mcp https://ethid-mcp.efp.workers.dev/sse
 ```
 
 ### 3. Start Using
@@ -648,8 +648,8 @@ Result: Same data but much slower
 claude mcp list
 
 # Re-add server
-claude mcp remove efp-mcp
-claude mcp add --transport http efp-mcp https://efp-mcp.efp.workers.dev
+claude mcp remove ethid-mcp
+claude mcp add --transport http ethid-mcp https://ethid-mcp.efp.workers.dev
 ```
 
 #### "API request failed"
@@ -675,7 +675,7 @@ claude mcp add --transport http efp-mcp https://efp-mcp.efp.workers.dev
 #### Test Basic Connectivity:
 
 ```bash
-curl https://efp-mcp.efp.workers.dev
+curl https://ethid-mcp.efp.workers.dev
 ```
 
 #### Test Specific Tool:
@@ -695,7 +695,7 @@ curl https://efp-mcp.efp.workers.dev
 #### Check Deployment:
 
 ```bash
-npx wrangler tail efp-mcp
+npx wrangler tail ethid-mcp
 ```
 
 ### Common Patterns
@@ -832,8 +832,8 @@ claude mcp list
 
 ## Getting Help
 
-1. **Check deployment:** `npx wrangler tail efp-mcp`
-2. **Test connectivity:** `curl https://efp-mcp.efp.workers.dev`
+1. **Check deployment:** `npx wrangler tail ethid-mcp`
+2. **Test connectivity:** `curl https://ethid-mcp.efp.workers.dev`
 3. **Review logs:** Check Cloudflare Workers dashboard
 4. **Verify config:** Check Claude Code MCP settings
 5. **Test tools:** Use individual tool calls for debugging
