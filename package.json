@@ -1,6 +1,6 @@
 {
-	"name": "my-new-worker",
-	"version": "0.0.0",
+	"name": "efp-mcp",
+	"version": "1.0.0",
 	"private": true,
 	"scripts": {
 		"deploy": "workers-mcp docgen src/index.ts && wrangler deploy",

@@ -8,6 +8,7 @@ export function registerContextTools(server: McpServer, env: Env) {
 	// searchContexts tool
 	server.tool(
 		'searchContexts',
+		'Search through EFP documentation and context information by keywords and categories',
 		{
 			query: z.string().describe('Search query for documentation'),
 			category: z.string().optional().describe('Filter by category (protocols, usage, technical)'),

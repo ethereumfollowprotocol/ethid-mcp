@@ -6,6 +6,7 @@ export function registerProfileTools(server: McpServer, baseUrl: string) {
 	// getProfileStats tool
 	server.tool(
 		'getProfileStats',
+		'Get follower and following counts for an Ethereum address or ENS name',
 		{ addressOrName: z.string().describe("ENS name (e.g., 'brantly.eth') or Ethereum address") },
 		async ({ addressOrName }) => {
 			try {
@@ -37,6 +38,7 @@ export function registerProfileTools(server: McpServer, baseUrl: string) {
 	// getFollowers tool
 	server.tool(
 		'getFollowers',
+		'Get a list of followers for an Ethereum address or ENS name with optional filtering and sorting',
 		{
 			addressOrName: z.string().describe('ENS name or Ethereum address'),
 			limit: z.number().optional().default(10).describe('Number of followers to return'),
@@ -94,6 +96,7 @@ export function registerProfileTools(server: McpServer, baseUrl: string) {
 	// getFollowing tool
 	server.tool(
 		'getFollowing',
+		'Get a list of accounts that an Ethereum address or ENS name is following with optional filtering and sorting',
 		{
 			addressOrName: z.string().describe('ENS name or Ethereum address'),
 			limit: z.number().optional().default(10).describe('Number of following to return'),

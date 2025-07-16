@@ -7,6 +7,7 @@ export function registerAccountTools(server: McpServer, baseUrl: string, ensWork
 	// fetchAccount tool
 	server.tool(
 		'fetchAccount',
+		'Fetch complete account information including ENS records, avatar, and social links for an address or ENS name',
 		{
 			addressOrName: z.string().describe('ENS name or Ethereum address'),
 			list: z.number().optional().describe('Optional list ID'),
@@ -41,6 +42,7 @@ export function registerAccountTools(server: McpServer, baseUrl: string, ensWork
 	// fetchBulkAccounts tool
 	server.tool(
 		'fetchBulkAccounts',
+		'Bulk reverse resolution of Ethereum addresses to ENS names - efficiently convert multiple addresses',
 		{
 			addresses: z.array(z.string()).describe('Array of Ethereum addresses'),
 		},
@@ -90,6 +92,7 @@ export function registerAccountTools(server: McpServer, baseUrl: string, ensWork
 	// fetchProfileLists tool
 	server.tool(
 		'fetchProfileLists',
+		'Fetch all follow lists associated with an Ethereum address or ENS name',
 		{
 			addressOrName: z.string().describe('ENS name or Ethereum address'),
 			fresh: z.boolean().optional().describe('Whether to fetch fresh data'),
@@ -122,6 +125,7 @@ export function registerAccountTools(server: McpServer, baseUrl: string, ensWork
 	// fetchProfileBadges tool
 	server.tool(
 		'fetchProfileBadges',
+		'Fetch achievement badges and special recognitions for an Ethereum address or ENS name',
 		{
 			addressOrName: z.string().describe('ENS name or Ethereum address'),
 			list: z.number().optional().describe('Optional list ID'),

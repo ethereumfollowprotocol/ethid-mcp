@@ -5,6 +5,7 @@ export function registerTagTools(server: McpServer, baseUrl: string) {
 	// fetchFollowingTags tool
 	server.tool(
 		'fetchFollowingTags',
+		'Fetch tags that a user has applied to accounts they follow (e.g., "friend", "top8", "family")',
 		{
 			addressOrName: z.string().describe('ENS name or Ethereum address'),
 			list: z.number().optional().describe('Optional list ID'),
@@ -41,6 +42,7 @@ export function registerTagTools(server: McpServer, baseUrl: string) {
 	// fetchFollowerTags tool
 	server.tool(
 		'fetchFollowerTags',
+		'Fetch tags that have been applied to a user by their followers (reverse tag lookup)',
 		{
 			addressOrName: z.string().describe('ENS name or Ethereum address'),
 			list: z.number().optional().describe('Optional list ID'),

@@ -6,6 +6,7 @@ export function registerRelationshipTools(server: McpServer, baseUrl: string) {
 	// checkFollowing tool
 	server.tool(
 		'checkFollowing',
+		'Check if a specific address or ENS name is being followed by another user',
 		{
 			list: z.number().optional().describe('List number to check'),
 			addressOrName: z.string().optional().describe('Address or ENS name to check'),
@@ -62,6 +63,7 @@ export function registerRelationshipTools(server: McpServer, baseUrl: string) {
 	// checkFollower tool
 	server.tool(
 		'checkFollower',
+		'Check if a specific address or ENS name is followed by another user (reverse relationship check)',
 		{
 			addressOrName: z.string().describe('Address or ENS name to check follower state'),
 			follower: z.string().describe('Address or ENS name to check if following'),

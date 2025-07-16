@@ -6,6 +6,7 @@ export function registerListTools(server: McpServer, baseUrl: string) {
 	// fetchAllFollowings tool
 	server.tool(
 		'fetchAllFollowings',
+		'Export complete follow list data including all entries, tags, and metadata for a specific list ID',
 		{
 			list: z.number().describe('List ID to export'),
 		},
@@ -34,6 +35,7 @@ export function registerListTools(server: McpServer, baseUrl: string) {
 	// fetchListsForUser tool
 	server.tool(
 		'fetchListsForUser',
+		'Get all follow lists owned by a specific Ethereum address or ENS name',
 		{
 			addressOrName: z.string().describe('ENS name or Ethereum address'),
 		},

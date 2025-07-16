@@ -5,6 +5,7 @@ export function registerGuidanceTools(server: McpServer) {
 	// getBestPractices tool
 	server.tool(
 		'getBestPractices',
+		'Get best practices and recommendations for using EFP MCP tools effectively',
 		{
 			scenario: z.string().optional().describe('Usage scenario'),
 		},
@@ -77,6 +78,7 @@ export function registerGuidanceTools(server: McpServer) {
 	// getUsagePattern tool
 	server.tool(
 		'getUsagePattern',
+		'Get common usage patterns and code examples for specific EFP MCP use cases',
 		{
 			queryType: z.string().optional().describe('Type of query pattern needed'),
 		},
@@ -159,6 +161,7 @@ const resolved = await fetchBulkAccounts({ addresses });
 	// getToolGuidance tool
 	server.tool(
 		'getToolGuidance',
+		'Get recommended tools and approaches for specific EFP-related tasks',
 		{
 			task: z.string().optional().describe('Task description'),
 		},
@@ -220,6 +223,7 @@ const resolved = await fetchBulkAccounts({ addresses });
 	// getEfficiencyTips tool
 	server.tool(
 		'getEfficiencyTips',
+		'Get performance optimization tips and efficiency recommendations for EFP MCP usage',
 		{
 			area: z.string().optional().describe('Performance area to optimize'),
 		},

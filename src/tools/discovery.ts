@@ -7,6 +7,7 @@ export function registerDiscoveryTools(server: McpServer, baseUrl: string) {
 	// fetchNotifications tool
 	server.tool(
 		'fetchNotifications',
+		'Fetch recent notifications about new followers, unfollows, and social activity for a user',
 		{
 			userAddress: z.string().describe('User address'),
 			interval: z.string().optional().describe('Time interval for notifications'),
@@ -39,6 +40,7 @@ export function registerDiscoveryTools(server: McpServer, baseUrl: string) {
 	// fetchRecommendations tool
 	server.tool(
 		'fetchRecommendations',
+		'Get personalized account recommendations based on social graph analysis and discovery algorithms',
 		{
 			endpoint: z.enum(['recommended', 'discover']).describe('Recommendation endpoint to use'),
 			addressOrName: z.string().optional().describe('ENS name or Ethereum address (for recommended endpoint)'),
@@ -82,6 +84,7 @@ export function registerDiscoveryTools(server: McpServer, baseUrl: string) {
 	// fetchLeaderboard tool
 	server.tool(
 		'fetchLeaderboard',
+		'Get top accounts ranked by followers, activity, and social engagement with filtering options',
 		{
 			limit: z.number().optional().describe('Number of results to return'),
 			search: z.string().optional().describe('Search term'),
