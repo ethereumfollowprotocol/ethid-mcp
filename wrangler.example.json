@@ -10,7 +10,6 @@
 	},
 	"vars": {
 		"EFP_API_URL": "https://api.ethfollow.xyz/api/v1",
-		"EFP_GOOGLE_DOC_ID": "YOUR_GOOGLE_DOC_ID_HERE",
 		"ENS_WORKER_URL": "https://ens.ethfollow.xyz"
 	}
 }
