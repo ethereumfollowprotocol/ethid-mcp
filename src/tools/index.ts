@@ -8,12 +8,16 @@ import { registerDiscoveryTools } from './discovery';
 import { registerListTools } from './lists';
 import { registerContextTools } from './context';
 import { registerGuidanceTools } from './guidance';
+import { registerChatGPTTools } from './chatgpt';
 
 export function registerAllTools(server: McpServer, env: Env) {
 	const baseUrl = env.EFP_API_URL || 'https://api.ethfollow.xyz/api/v1';
 	const ensWorkerUrl = env.ENS_WORKER_URL || 'https://ens.ethfollow.xyz';
 
-	// Register all tool categories
+	// Register ChatGPT compatibility tools first (required: search and fetch)
+	registerChatGPTTools(server, baseUrl, ensWorkerUrl);
+
+	// Register all other tool categories
 	registerProfileTools(server, baseUrl);
 	registerAccountTools(server, baseUrl, ensWorkerUrl);
 	registerRelationshipTools(server, baseUrl);
