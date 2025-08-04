@@ -53,6 +53,7 @@ export function registerChatGPTTools(server: McpServer, baseUrl: string, ensWork
 						}
 					} catch (e) {
 						// Profile not found, continue with other searches
+						console.error('Error fetching profile in search tool:', e);
 					}
 				}
 
