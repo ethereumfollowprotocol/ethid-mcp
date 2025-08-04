@@ -170,7 +170,9 @@ export function registerChatGPTTools(server: McpServer, baseUrl: string, ensWork
 								website: account.ens?.url
 							};
 						}
-					} catch (e) {}
+					} catch (e) {
+						console.error('Error fetching account details for profile:', identifier, e);
+					}
 
 					return {
 						content: [{
