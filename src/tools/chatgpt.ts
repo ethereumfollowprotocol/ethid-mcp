@@ -154,7 +154,9 @@ export function registerChatGPTTools(server: McpServer, baseUrl: string, ensWork
 							profileData.followerCount = stats.followers_count || 0;
 							profileData.followingCount = stats.following_count || 0;
 						}
-					} catch (e) {}
+					} catch (e) {
+						console.error('Error fetching user stats:', e);
+					}
 
 					// Get account details
 					try {
