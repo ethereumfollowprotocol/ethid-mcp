@@ -77,7 +77,7 @@ export function registerChatGPTTools(server: McpServer, baseUrl: string, ensWork
 							}
 						}
 					} catch (e) {
-						// Leaderboard search failed, continue
+						console.error('Leaderboard search failed:', e);
 					}
 				}
 
