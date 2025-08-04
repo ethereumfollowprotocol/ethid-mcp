@@ -4,8 +4,9 @@ An MCP (Model Context Protocol) server that provides comprehensive access to the
 
 ## Features
 
-### Core Tools (22 Total)
+### Core Tools (24 Total)
 
+- **ChatGPT Compatibility**: `search`, `fetch` - Required tools for ChatGPT MCP connector integration
 - **Basic Operations**: `getFollowerCount`, `getFollowers`, `getFollowing`, `checkFollowing`, `checkFollower`
 - **Profile Data**: `fetchAccount`, `fetchProfileStats`, `fetchProfileLists`, `fetchProfileBadges`, `fetchProfileQRCode`
 - **Advanced Queries**: `fetchProfileFollowing`, `fetchProfileFollowers` with pagination and filtering
@@ -17,6 +18,7 @@ An MCP (Model Context Protocol) server that provides comprehensive access to the
 
 ### Key Capabilities
 
+- **ChatGPT Compatible**: Implements required `search` and `fetch` tools for ChatGPT MCP connectors
 - **Tag Filtering**: Filter followers/following by tags (e.g., "top8", "friend", "family")
 - **ENS Resolution**: Automatic resolution of ENS names to addresses
 - **Bulk ENS Reverse Resolution**: Convert multiple addresses to ENS names efficiently
@@ -26,7 +28,7 @@ An MCP (Model Context Protocol) server that provides comprehensive access to the
 
 ## Setup
 
-### For Developers
+### For Claude Desktop
 
 ```json
 {
@@ -39,6 +41,18 @@ An MCP (Model Context Protocol) server that provides comprehensive access to the
 }
 ```
 
+### For ChatGPT
+
+1. Go to ChatGPT Settings → Connectors
+2. Add Custom Connector with:
+   - **Name**: ETHID MCP
+   - **URL**: `https://ethid-mcp.efp.workers.dev/sse`
+   - **Description**: Search and explore Ethereum Follow Protocol profiles, followers, and social connections
+3. Connect and authenticate
+4. Use "Search" or "Deep Research" features to access EFP data
+
+**Note**: ChatGPT requires the `search` and `fetch` tools which are now included in this server.
+
 ## Usage
 
 **🚀 IMPORTANT: Before using the ETHID MCP server, run the initialization prompt from [ETHID_MCP_INITIALIZATION_PROMPT.md](./ETHID_MCP_INITIALIZATION_PROMPT.md) to ensure optimal performance and proper tool usage.**
@@ -48,6 +62,14 @@ See [USAGE_GUIDE.md](./USAGE_GUIDE.md) for comprehensive examples and best pract
 ### Quick Examples
 
 ```typescript
+// ChatGPT-compatible search
+await search({ query: 'vitalik.eth' });
+// Result: {"ids": ["profile:vitalik.eth"], "results": [...] }
+
+// Fetch detailed profile
+await fetch({ id: 'profile:vitalik.eth' });
+// Result: Complete profile with followers, following, ENS data
+
 // Get follower count
 await getFollowerCount({ addressOrName: 'vitalik.eth' });
 // Result: "vitalik.eth has 4811 followers and is following 10 accounts."
@@ -78,6 +100,7 @@ ethid-mcp/
 │   ├── index.ts              # Main MCP agent implementation
 │   ├── tools/                # Modular tool definitions
 │   │   ├── index.ts          # Tool registration coordinator
+│   │   ├── chatgpt.ts        # ChatGPT compatibility tools (search/fetch)
 │   │   ├── profile.ts        # Profile and following/followers tools
 │   │   ├── account.ts        # Account data and ENS resolution tools
 │   │   ├── relationships.ts  # Relationship checking tools
@@ -107,6 +130,7 @@ The ETHID MCP server operates as a Cloudflare Worker that:
 ### Key Components
 
 - **Cloudflare Worker**: Main API integration and business logic
+- **ChatGPT Compatibility Layer**: Search/fetch tools for ChatGPT MCP connectors
 - **Local MCP Server**: Proxy for Claude Desktop integration
 - **Node.js Wrapper**: Compatibility layer for Node.js v22.12.0+
 
